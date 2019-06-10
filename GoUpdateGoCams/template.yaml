@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  GoVersionStatistics:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: GoVersionStatistics/lambda_function.lambda_handler
+      Runtime: python3.6
+      Description: ''
+      MemorySize: 256
+      Timeout: 90
+      Role: 'arn:aws:iam::828201240123:role/LambaRole_GoVersionStatistics'
+      CodeUri: .debug/
