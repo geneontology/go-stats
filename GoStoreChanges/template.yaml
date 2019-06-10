@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  GoStoreChanges:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Description: ''
+      Handler: GoStoreChanges/lambda_function.lambda_handler
+      MemorySize: 1024
+      Role: 'arn:aws:iam::828201240123:role/LambdaRole_GoChanges'
+      Runtime: python3.6
+      Timeout: 120
