@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='go-stats',
-    version='1.1.1',
+    version='1.1.2',
     description='Python Library to generate statistics on a Gene Ontology (GO) release',
     py_modules=["go_stats"],
     packages=[''],
