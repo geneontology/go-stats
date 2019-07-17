@@ -9,11 +9,14 @@ Generate statistics for a GO release based on a GOLr instance
 ```
 import go_stats
 
-stats = go_stats.compute_stats('http://golr-aux.geneontology.io/solr/')
+json_stats = go_stats.compute_stats('http://golr-aux.geneontology.io/solr/')
+go_stats.write_json("stats.json", json_stats)
 
-print(stats)
+tsv_stats = go_stats.create_text_report(json_stats)
+go_stats.write_text("stats.tsv", tsv_stats)
 
-go_stats.write_json("stats.json", stats)
+json_meta = go_stats.create_meta(json_stats)
+go_stats.write_json("meta.json", json_meta)
 ```
 
 

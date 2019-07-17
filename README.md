@@ -1,6 +1,14 @@
 # GO-Stats
 Compute statistics and changes for both the GO ontology and annotations at every release.
 
+The following details each folder of this repository:
+
+## libraries
+
+### go-stats
+This is the python package that is used to compute statistics over go annotations. You can [read more here](libraries/go-stats/README.md).
+
+
 ## GO Notification System
 The code checks the release date in the main pipeline (http://current.geneontology.org/metadata/release-date.json) and when the date changes, it triggers a secondary pipeline by publishing a message in a specific topic (SNS) and update the release date on the secondary pipeline
 
