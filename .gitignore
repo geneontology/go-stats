@@ -1,5 +1,6 @@
 libraries/go-stats/build/
 libraries/go-stats/dist/
 libraries/go-stats/venv/
+libraries/go-stats/reports/
 libraries/go-stats/.vscode/
 libraries/go-stats/*-info/
