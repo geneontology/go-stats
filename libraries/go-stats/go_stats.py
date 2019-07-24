@@ -555,7 +555,7 @@ def write_text(key, content):
 
 
 def print_help():
-    print('Usage: python go_stats.py -g <golr_url> -o <output_rep>\n')
+    print('Usage: python go_stats.py -g <golr_url> -b <obo_url> -o <output_rep>\n')
 
 
 def main(argv):
@@ -567,7 +567,7 @@ def main(argv):
         sys.exit(2)
 
     try:
-        opts, argv = getopt.getopt(argv,"g:o:",["gurl=","ofile="])
+        opts, argv = getopt.getopt(argv,"g:b:o:",["golrurl=","orep="])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -576,11 +576,11 @@ def main(argv):
         if opt == '-h':
             print_help()
             sys.exit()
-        elif opt in ("-g", "--gurl"):
+        elif opt in ("-g", "--golrurl"):
             golr_url = arg
-        elif opt in ("-o", "--ofile"):
+        elif opt in ("-o", "--orep"):
             output_rep = arg
-        
+
     if not output_rep.endswith("/"):
         output_rep += "/"
 
