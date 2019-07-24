@@ -2,7 +2,6 @@ import sys, getopt, os
 
 import requests
 import json
-import yaml
 
 
 

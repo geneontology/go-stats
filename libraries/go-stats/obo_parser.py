@@ -2,6 +2,7 @@ import networkx as nx
 import re
 
 from enum import Enum
+
 class TermState:
     ANY = 1
     VALID = 2

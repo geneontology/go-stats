@@ -9,9 +9,6 @@ import sys, getopt, os
 
 import requests
 import json
-import yaml
-from datetime import date, time, datetime
-from dateutil.parser import parse
 
 # import boto3
 # import botocore
