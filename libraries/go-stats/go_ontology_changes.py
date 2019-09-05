@@ -132,23 +132,23 @@ def compute_changes(current_obo_url, previous_obo_url):
     print(str(obsoleted_count) + " terms obsoleted since last revision")
     
     # Existing GO Terms with structural changes (is_a, part_of, has_part etc)
-    structural_changes = { }
+    relations_changes = { }
     structural_count = 0
     structural_total_count = 0
     for id, newterm in currentgo.get_terms().items():
         if oldgo.has_term(id):                                                                                                                                                                            
             oldterm = oldgo.get_term(id)
             if not newterm.structural_equals(oldterm):
-                if newterm.namespace not in structural_changes:
-                    structural_changes[newterm.namespace] = []
+                if newterm.namespace not in relations_changes:
+                    relations_changes[newterm.namespace] = []
                     
                 reasons = {}
                 for key, reason in newterm.explain_structural_differences(oldterm).items():
                     reasons[key] = { "current" : reason['current'], "previous" : reason['previous'] }
-                structural_changes[newterm.namespace].append({ "id" : id, "name": newterm.name , "changes": reasons })
+                relations_changes[newterm.namespace].append({ "id" : id, "name": newterm.name , "changes": reasons })
                 structural_count += 1
                 structural_total_count += len(reasons)
-    print(str(structural_count) + " terms structural changes since last revision")
+    print(str(structural_count) + " terms relation changes since last revision")
     
     
     # Existing GO Terms with meta changes (synonyms, xrefs, definition, etc)
@@ -190,53 +190,63 @@ def compute_changes(current_obo_url, previous_obo_url):
     print(str(meta_noxrefs_count) + " terms meta (NO XREFS) changes since last revision")
  
 
+    release_date = currentgo.header['data-version']
+    release_date = release_date[release_date.index("/") + 1:] if "/" in release_date else release_date
+
+    last_date = oldgo.header['data-version']
+    last_date = last_date[last_date.index("/") + 1:] if "/" in last_date else last_date
+
     print("Creating JSON report...")
     report = { }
-    report["releases"] = {
+    report["releases_compared"] = {
                 "current" : { "date": release_date, "version" : currentgo.header['data-version'], "format" : currentgo.header['format-version'] },
                 "previous" : { "date" : last_date, "version" : oldgo.header['data-version'], "format" : oldgo.header['format-version'] }
             }
     report["summary"] = {
         "current": {
-            "release_date" : report["releases"]["current"]["version"],
+            "release_date" : release_date,
             "valid_terms" : len(currentgo.get_terms(TermState.VALID)),
             "obsoleted_terms" : len(currentgo.get_terms(TermState.OBSOLETED)),
             "merged_terms" : len(currentgo.get_merged_terms(TermState.ANY)),
-            "biological_processes" : len(currentgo.get_terms_in("biological_process")),
-            "molecular_functions" : len(currentgo.get_terms_in("molecular_function")),
-            "cellular_components" : len(currentgo.get_terms_in("cellular_component")),
+            "biological_process_terms" : len(currentgo.get_terms_in("biological_process")),
+            "molecular_function_terms" : len(currentgo.get_terms_in("molecular_function")),
+            "cellular_component_terms" : len(currentgo.get_terms_in("cellular_component")),
             "meta_statements" : currentgo.count_all_metas(),
-            "meta_noxrefs_statements" : currentgo.count_all_metas(TermState.VALID, False),
-            "structural_statements" : currentgo.count_all_structurals()
+            "meta_statements_exclude_xrefs" : currentgo.count_all_metas(TermState.VALID, False),
+            "terms_relations" : currentgo.count_all_structurals()
         },
         "previous": {
-            "release_date" : report["releases"]["previous"]["version"],
+            "release_date" : last_date,
             "valid_terms" : len(oldgo.get_terms(TermState.VALID)),
             "obsoleted_terms" : len(oldgo.get_terms(TermState.OBSOLETED)),
             "merged_terms" : len(oldgo.get_merged_terms(TermState.ANY)),
-            "biological_processes" : len(oldgo.get_terms_in("biological_process")),
-            "molecular_functions" : len(oldgo.get_terms_in("molecular_function")),
-            "cellular_components" : len(oldgo.get_terms_in("cellular_component")),
+            "biological_process_terms" : len(oldgo.get_terms_in("biological_process")),
+            "molecular_function_terms" : len(oldgo.get_terms_in("molecular_function")),
+            "cellular_component_terms" : len(oldgo.get_terms_in("cellular_component")),
             "meta_statements" : oldgo.count_all_metas(),
-            "meta_noxrefs_statements" : oldgo.count_all_metas(TermState.VALID, False),
-            "structural_statements" : oldgo.count_all_structurals()
+            "meta_statements_exclude_xrefs" : oldgo.count_all_metas(TermState.VALID, False),
+            "terms_relations" : oldgo.count_all_structurals()
         },
-        "created_terms" : created_count,
-        "obsoleted_terms" : obsoleted_count,
-        "merged_terms" : merged_count,
-        "terms_structural_changes" : structural_count,
-        "terms_meta_changes" : meta_count,
-        "terms_meta_noxrefs_changes" : meta_noxrefs_count,
-        "total_structural_changes" : structural_total_count,
-        "total_meta_changes" : meta_total_count,
-        "total_meta_noxrefs_changes" : meta_noxrefs_total_count
+        "changes" : {
+            "created_terms" : created_count,
+            "obsoleted_terms" : obsoleted_count,
+            "merged_terms" : merged_count,
+            "relations_changes_by_term" : structural_count,
+            "meta_changes_by_term" : meta_count,
+            "meta_changes_exclude_xrefs_by_term" : meta_noxrefs_count,
+            "relations_changes" : structural_total_count,
+            "meta_changes" : meta_total_count,
+            "meta_changes_exclude_xrefs" : meta_noxrefs_total_count
+        }
     }
-    report["created_terms"] = created
-    report["obsoleted_terms"] = obsoleted
-    report["merged_terms"] = merged
-    report["structural_changes"] = structural_changes
-    report["meta_changes"] = meta_changes
-    report["meta_noxrefs_changes"] = meta_noxrefs_changes
+    report["detailed_changes"] = {
+        "created_terms" : created,
+        "obsoleted_terms" : obsoleted,
+        "merged_terms" : merged,
+        "relations_changes" : relations_changes,
+        "meta_changes" : meta_changes,
+        "meta_changes_exclude_xrefs" : meta_noxrefs_changes
+    }
 
     print("JSON report created.")
 
@@ -301,20 +311,20 @@ def flattern(A):
 #     print(str(obsoleted_count) + " terms obsoleted since last revision")
     
 #     # Existing GO Terms with structural changes (is_a, part_of, has_part etc)
-#     structural_changes = { }
+#     relations_changes = { }
 #     structural_count = 0
 #     structural_total_count = 0
 #     for id, newterm in newgo.get_terms().items():
 #         if oldgo.has_term(id):                                                                                                                                                                            
 #             oldterm = oldgo.get_term(id)
 #             if not newterm.structural_equals(oldterm):
-#                 if newterm.namespace not in structural_changes:
-#                     structural_changes[newterm.namespace] = []
+#                 if newterm.namespace not in relations_changes:
+#                     relations_changes[newterm.namespace] = []
                     
 #                 reasons = {}
 #                 for key, reason in newterm.explain_structural_differences(oldterm).items():
 #                     reasons[key] = { "current" : reason['current'], "previous" : reason['previous'] }
-#                 structural_changes[newterm.namespace].append({ "id" : id, "name": newterm.name , "changes": reasons })
+#                 relations_changes[newterm.namespace].append({ "id" : id, "name": newterm.name , "changes": reasons })
 #                 structural_count += 1
 #                 structural_total_count += len(reasons)
 #     print(str(structural_count) + " terms structural changes since last revision")
@@ -391,17 +401,17 @@ def flattern(A):
 #         "created_terms" : created_count,
 #         "obsoleted_terms" : obsoleted_count,
 #         "merged_terms" : merged_count,
-#         "terms_structural_changes" : structural_count,
-#         "terms_meta_changes" : meta_count,
+#         "relations_changes_by_term" : structural_count,
+#         "meta_changes_by_term" : meta_count,
 #         "terms_meta_noxrefs_changes" : meta_noxrefs_count,
-#         "total_structural_changes" : structural_total_count,
-#         "total_meta_changes" : meta_total_count,
+#         "relations_changes" : structural_total_count,
+#         "meta_changes" : meta_total_count,
 #         "total_meta_noxrefs_changes" : meta_noxrefs_total_count
 #     }
 #     report["created_terms"] = created
 #     report["obsoleted_terms"] = obsoleted
 #     report["merged_terms"] = merged
-#     report["structural_changes"] = structural_changes
+#     report["relations_changes"] = relations_changes
 #     report["meta_changes"] = meta_changes
 #     report["meta_noxrefs_changes"] = meta_noxrefs_changes
     
@@ -441,11 +451,11 @@ def flattern(A):
 #     txtreport += "created_terms\t" + str(report["summary"]["created_terms"]) + "\n"
 #     txtreport += "obsoleted_terms\t" + str(report["summary"]["obsoleted_terms"]) + "\n"
 #     txtreport += "merged_terms\t" + str(report["summary"]["merged_terms"]) + "\n"
-#     txtreport += "terms_structural_changes\t" + str(report["summary"]["terms_structural_changes"]) + "\n"
-#     txtreport += "terms_meta_changes\t" + str(report["summary"]["terms_meta_changes"]) + "\n"
+#     txtreport += "relations_changes_by_term\t" + str(report["summary"]["relations_changes_by_term"]) + "\n"
+#     txtreport += "meta_changes_by_term\t" + str(report["summary"]["meta_changes_by_term"]) + "\n"
 #     txtreport += "terms_meta_noxrefs_changes\t" + str(report["summary"]["terms_meta_noxrefs_changes"]) + "\n"
-#     txtreport += "total_structural_changes\t" + str(report["summary"]["total_structural_changes"]) + "\n"
-#     txtreport += "total_meta_changes\t" + str(report["summary"]["total_meta_changes"]) + "\n"
+#     txtreport += "relations_changes\t" + str(report["summary"]["relations_changes"]) + "\n"
+#     txtreport += "meta_changes\t" + str(report["summary"]["meta_changes"]) + "\n"
 #     txtreport += "total_meta_noxrefs_changes\t" + str(report["summary"]["total_meta_noxrefs_changes"]) + "\n"
 
 #     txtreport += "\nTERMS CREATED\t" + str(created_count) + "\n"
@@ -464,8 +474,8 @@ def flattern(A):
 #             txtreport += aspect + "\t" + term["current"]["id"] + "\t" + term["current"]["name"] + "\t" + term["previous"]["id"] + "\t" + term["previous"]["name"] + "\n"
 
 #     txtreport += "\nTERMS STRUCTURAL CHANGES\t" + str(structural_count) + "\n"
-#     for aspect in report["structural_changes"]:
-#         for term in report["structural_changes"][aspect]:
+#     for aspect in report["relations_changes"]:
+#         for term in report["relations_changes"][aspect]:
 #             txtreport += aspect + "\t" + term["id"] + "\t" + term["name"]
 #             for change in term["changes"]:
 #                 curr = term["changes"][change]["current"]
@@ -514,8 +524,83 @@ def flattern(A):
 
 
 def create_text_report(json_changes):
-    return ""
+    text_report = ""
 
+    text_report = "CHANGES IN GO ONTOLOGY"
+    
+    text_report += "\n\nRELEASES COMPARED"
+    text_report += "\ncurrent_release_date\t" + json_changes["releases_compared"]["current"]["date"]    
+    text_report += "\nprevious_release_date\t" + json_changes["releases_compared"]["previous"]["date"]
+
+    text_report += "\n\nSUMMARY: CURRENT RELEASE"
+    for key, val in json_changes["summary"]["current"].items():
+        if "release_date" != key:
+            text_report += "\n" + key + "\t" + str(val)
+
+    text_report += "\n\nSUMMARY: PREVIOUS RELEASE"
+    for key, val in json_changes["summary"]["previous"].items():
+        if "release_date" != key:
+            text_report += "\n" + key + "\t" + str(val)
+
+    text_report += "\n\nSUMMARY: DIFF BETWEEN RELEASES"
+    for key, val in json_changes["summary"]["changes"].items():
+        text_report += "\n" + key + "\t" + str(val)
+
+    text_report += "\n\nDETAILED CHANGES"
+
+    text_report += "\n\n" + count(json_changes["detailed_changes"]["created_terms"]) + " CREATED TERMS"
+    for key, val in json_changes["detailed_changes"]["created_terms"].items():
+        for item in val:
+            text_report += "\n" + key + "\t" + item["id"] + "\t" + item["name"]
+
+    text_report += "\n\n" + count(json_changes["detailed_changes"]["obsoleted_terms"]) + " OBSOLETED TERMS"
+    for key, val in json_changes["detailed_changes"]["obsoleted_terms"].items():
+        for item in val:
+            text_report += "\n" + key + "\t" + item["id"] + "\t" + item["name"]
+
+    text_report += "\n\n" + count(json_changes["detailed_changes"]["merged_terms"]) + " MERGED TERMS"
+    for key, val in json_changes["detailed_changes"]["merged_terms"].items():
+        for item in val:
+            text_report += "\n" + key + "\t" + item["current"]["id"] + "\t" + item["current"]["name"] + "\tWAS\t" + "\t" + item["previous"]["id"] + "\t" + item["previous"]["name"]
+
+    text_report += "\n\n" + count(json_changes["detailed_changes"]["relations_changes"]) + " RELATION CHANGES"
+    for key, val in json_changes["detailed_changes"]["relations_changes"].items():
+        for item in val:
+            text_report += "\n" + key + "\t" + item["id"] + "\t" + item["name"]
+            data = item["changes"]
+            for field in data:
+                text_report += "\n\t" + field + "\t" + format(data[field]["current"]) + "\tWAS\t" +format(data[field]["previous"])
+
+    text_report += "\n\n" + count(json_changes["detailed_changes"]["meta_changes_exclude_xrefs"]) + " META CHANGES EXCLUDING XREFS"
+    for key, val in json_changes["detailed_changes"]["meta_changes_exclude_xrefs"].items():
+        for item in val:
+            text_report += "\n" + key + "\t" + item["id"] + "\t" + item["name"]
+            data = item["changes"]
+            for field in data:
+                text_report += "\n\t" + field + "\t" + format(data[field]["current"]) + "\tWAS\t" +format(data[field]["previous"])
+
+    text_report += "\n\n" + count(json_changes["detailed_changes"]["meta_changes"]) + " META CHANGES"
+    for key, val in json_changes["detailed_changes"]["meta_changes"].items():
+        for item in val:
+            text_report += "\n" + key + "\t" + item["id"] + "\t" + item["name"]
+            data = item["changes"]
+            for field in data:
+                text_report += "\n\t" + field + "\t" + format(data[field]["current"]) + "\tWAS\t" +format(data[field]["previous"])
+
+    return text_report
+
+def format(item):
+    if type(item) == str:
+        return item.strip()
+    if type(item) == list:
+        return ";".join(item)
+    return item
+
+def count(map):
+    count = 0
+    for key in map:
+        count += len(map[key])
+    return str(count)
 
 
 
@@ -566,6 +651,7 @@ def main(argv):
         os.mkdir(output_rep)
 
     output_json =  output_rep + "go-ontology-changes.json"
+    output_stats_json = output_rep + "go-ontology-stats.json"
     output_tsv =  output_rep + "go-ontology-changes.tsv"
 
     print("Will write ontology changes to " + output_json + " and " + output_tsv)
@@ -574,12 +660,13 @@ def main(argv):
 
     print("Saving Stats to <" + output_json + "> ...")    
     write_json(output_json, json_changes)
+    write_json(output_stats_json, json_changes["summary"]["current"])
     print("Done.")
 
-    # print("Saving Stats to <" + output_tsv + "> ...")    
-    # tsv_changes = create_text_report(json_changes)
-    # write_text(output_tsv, tsv_changes)
-    # print("Done.")
+    print("Saving Stats to <" + output_tsv + "> ...")    
+    tsv_changes = create_text_report(json_changes)
+    write_text(output_tsv, tsv_changes)
+    print("Done.")
     
 
 

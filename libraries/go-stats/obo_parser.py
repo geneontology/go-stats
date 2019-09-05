@@ -54,8 +54,8 @@ class Term:
             count += 1
         if self.alt_ids:
             count += len(self.alt_ids)
-        if self.is_obsolete:
-            count += 1
+        # if self.is_obsolete:
+        #     count += 1
         if self.namespace:
             count += 1
         if self.name:
