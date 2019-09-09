@@ -358,13 +358,7 @@ def golr_fetch_references_group(group):
     response = golr_fetch(url)
     return response
 
-# def golr_fetch_evidence_by_species(taxon_id):
-#     url = 'select?fq=document_category:%22annotation%22&q=*:*&wt=json&fq=taxon:%22' + taxon_id + '%22&facet=true&facet.field=evidence_type&facet.limit=10000&rows=0'
-#     response = golr_fetch(url)
-#     return response    
-
-
-def golr_fetch_evidence_by_species(taxon):
+def golr_fetch_annotation_by_evidence_by_species(taxon):
     url = 'select?fq=document_category:%22annotation%22&q=*:*&wt=json&fq=taxon:%22' + taxon + '%22&facet=true&facet.field=evidence_type&facet.limit=10000&rows=0'
     response = golr_fetch(url)
 
@@ -489,10 +483,9 @@ def create_stats(all_terms, all_annotations, all_entities, release_date):
 
 
 
-
-    ref_genome_evidences = { }
+    ref_genome_annotation_evidences = { }
     for taxon in reference_genomes_ids:
-        responses = golr_fetch_evidence_by_species(taxon)
+        responses = golr_fetch_annotation_by_evidence_by_species(taxon)
         all_map = build_map(responses[ALL]['facet_counts']['facet_fields']['evidence_type'])
         bp_map = build_map(responses[BP]['facet_counts']['facet_fields']['evidence_type'])
         mf_map = build_map(responses[MF]['facet_counts']['facet_fields']['evidence_type'])
@@ -502,10 +495,10 @@ def create_stats(all_terms, all_annotations, all_entities, release_date):
         for key, value in all_map.items():
             merged_map[key] = { "A" : value , "P" : bp_map[key] if key in bp_map else 0 , "F" : mf_map[key] if key in mf_map else 0 , "C" : cc_map[key] if key in cc_map else 0 }
 
-        ref_genome_evidences[taxon] = {
+        ref_genome_annotation_evidences[taxon] = {
             "by_evidence" : merged_map
         }
-        ref_genome_evidences[taxon]["by_evidence_cluster"] = cluster_complex_map(ref_genome_evidences[taxon]["by_evidence"], reverse_evidence_groups)
+        ref_genome_annotation_evidences[taxon]["by_evidence_cluster"] = cluster_complex_map(ref_genome_annotation_evidences[taxon]["by_evidence"], reverse_evidence_groups)
         
 
     annotations = { 
@@ -564,7 +557,7 @@ def create_stats(all_terms, all_annotations, all_entities, release_date):
             "cluster" : cluster_map(build_map(all_annotations['facet_counts']['facet_fields']['evidence_type']), reverse_evidence_groups)
         },
 
-        "by_reference_genome" : ref_genome_evidences,
+        "by_reference_genome" : ref_genome_annotation_evidences,
 
         "by_group": build_map(all_annotations['facet_counts']['facet_fields']['assigned_by'])
         
