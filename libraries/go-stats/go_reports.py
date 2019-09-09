@@ -234,7 +234,7 @@ def main(argv):
         "annotations" : {
             "total" : json_stats["annotations"]["total"],
             "total_no_pb" : json_stats_no_pb["annotations"]["total"],
-            "by_aspect" : json_stats["annotations"],
+            "by_aspect" : json_stats["annotations"]["by_aspect"],
             "by_evidence_cluster" : json_stats["annotations"]["by_evidence"]["cluster"],
             "by_evidence_cluster_no_pb" : json_stats_no_pb["annotations"]["by_evidence"]["cluster"],
             "by_reference_genome" : json_stats["annotations"]["by_reference_genome"]
