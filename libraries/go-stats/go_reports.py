@@ -191,6 +191,9 @@ def main(argv):
 
     ontology = json_onto_changes["summary"]["current"].copy()
     del ontology["release_date"]
+    ontology["created_terms"] = json_onto_changes["summary"]["changes"]["created_terms"]
+    ontology["obsoleted_terms"] = json_onto_changes["summary"]["changes"]["obsoleted_terms"]
+    ontology["merged_terms"] = json_onto_changes["summary"]["changes"]["merged_terms"]
 
     json_stats = {
         "release_date" : json_stats["release_date"],
@@ -235,6 +238,7 @@ def main(argv):
             "total" : json_stats["annotations"]["total"],
             "total_no_pb" : json_stats_no_pb["annotations"]["total"],
             "by_aspect" : json_stats["annotations"]["by_aspect"],
+            "by_bioentity_type_cluster" : json_stats["annotations"]["bioentities"]["by_type"]["cluster"],
             "by_evidence_cluster" : json_stats["annotations"]["by_evidence"]["cluster"],
             "by_evidence_cluster_no_pb" : json_stats_no_pb["annotations"]["by_evidence"]["cluster"],
             "by_reference_genome" : json_stats["annotations"]["by_reference_genome"]
