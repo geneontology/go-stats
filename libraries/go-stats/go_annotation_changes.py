@@ -174,7 +174,7 @@ def create_text_report(json_changes):
 
     
     text_report += "\n\n" + str(len(json_changes["detailed_changes"]["taxa"]["added"])) + " ADDED TAXA"
-    for taxon in json_changes["detailed_changes"]["taxa"]["added"].items():
+    for taxon in json_changes["detailed_changes"]["taxa"]["added"]:
         text_report += "\n" + taxon
     
     text_report += "\n\n" + str(len(json_changes["detailed_changes"]["taxa"]["removed"])) + " REMOVED TAXA"
