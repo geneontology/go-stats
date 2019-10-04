@@ -201,7 +201,7 @@ def create_text_report(json_changes):
 
     text_report += "\n\nSUMMARY: DIFF BETWEEN RELEASES"
     for key, val in json_changes["summary"]["changes"].items():
-        text_report += "\n" + key + "_changes\t" + str(val)
+        text_report += "\nchanges_" + key + "\t" + str(val)
 
 
     text_report += "\n\nDETAILED CHANGES"
