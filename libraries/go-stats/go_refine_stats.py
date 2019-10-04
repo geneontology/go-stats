@@ -115,15 +115,20 @@ def main(argv):
     go_stats.write_json(output_rep + "go-stats-no-pb.json", json_stats_no_pb)
 
 
-    annotations_by_reference_genome = { }
-    for taxon in go_stats.reference_genomes_ids:
-        key = go_stats.taxon_label(taxon)
-        annotations_by_reference_genome[key] = json_stats["annotations"]["by_taxon"][key] if key in json_stats["annotations"]["by_taxon"] else { }
+    annotations_by_reference_genome = json_stats["annotations"]["by_model_organism"]
+    for taxon in annotations_by_reference_genome:
+        for ecode in annotations_by_reference_genome[taxon]["by_evidence"]:
+            annotations_by_reference_genome[taxon]["by_evidence"][ecode]["B"] = json_stats["annotations"]["by_model_organism"][taxon]["by_evidence"][ecode]["F"] - json_stats_no_pb["annotations"]["by_model_organism"][taxon]["by_evidence"][ecode]["F"]
+        for ecode in annotations_by_reference_genome[taxon]["by_evidence_cluster"]:
+            annotations_by_reference_genome[taxon]["by_evidence_cluster"][ecode]["B"] = json_stats["annotations"]["by_model_organism"][taxon]["by_evidence_cluster"][ecode]["F"] - json_stats_no_pb["annotations"]["by_model_organism"][taxon]["by_evidence_cluster"][ecode]["F"]
 
     bioentities_by_reference_genome = { }
     for taxon in go_stats.reference_genomes_ids:
         key = go_stats.taxon_label(taxon)
         bioentities_by_reference_genome[key] = json_stats["bioentities"]["by_filtered_taxon"]["cluster"][key] if key in json_stats["bioentities"]["by_filtered_taxon"]["cluster"] else { }
+        for btype in bioentities_by_reference_genome[key]:
+            val = json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"][key]["F"] if (key in json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"] and "F" in json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"][key]) else 0
+            bioentities_by_reference_genome[key][btype]["B"] = bioentities_by_reference_genome[key][btype]["F"] - val
 
     references_by_reference_genome = { }
     for taxon in go_stats.reference_genomes_ids:
@@ -151,7 +156,7 @@ def main(argv):
             "by_bioentity_type_cluster_no_pb" : json_stats_no_pb["annotations"]["by_bioentity_type"]["cluster"],
             "by_evidence_cluster" : json_stats["annotations"]["by_evidence"]["cluster"],
             "by_evidence_cluster_no_pb" : json_stats_no_pb["annotations"]["by_evidence"]["cluster"],
-            "by_model_organism" : json_stats["annotations"]["by_model_organism"]
+            "by_model_organism" : annotations_by_reference_genome
         },
         "taxa" : {
             "total" : json_stats["taxa"]["total"],
