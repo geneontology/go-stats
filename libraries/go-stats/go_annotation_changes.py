@@ -121,7 +121,7 @@ def create_text_report(json_changes):
     text_report += "\ntaxon"
     for type, nb in json_changes["detailed_changes"]["bioentities"]["by_type"]["cluster"].items():
         text_report += "\t" + type
-    for key, val in json_changes["detailed_changes"]["bioentities"]["by_taxon"]["cluster"].items():
+    for key, val in json_changes["detailed_changes"]["bioentities"]["by_filtered_taxon"]["cluster"].items():
         text_report += "\n" + key
         for type, nb in json_changes["detailed_changes"]["bioentities"]["by_type"]["cluster"].items():
             text_report += "\t" + str(val[type]["A"]) if type in val else "\t0"
@@ -130,7 +130,7 @@ def create_text_report(json_changes):
     text_report += "\ntaxon"
     for type, nb in json_changes["detailed_changes"]["bioentities"]["by_type"]["all"].items():
         text_report += "\t" + type
-    for key, val in json_changes["detailed_changes"]["bioentities"]["by_taxon"]["all"].items():
+    for key, val in json_changes["detailed_changes"]["bioentities"]["by_filtered_taxon"]["all"].items():
         text_report += "\n" + key
         for type, nb in json_changes["detailed_changes"]["bioentities"]["by_type"]["all"].items():
             text_report += "\t" + str(val[type]["A"]) if type in val else "\t0"
@@ -182,8 +182,8 @@ def create_text_report(json_changes):
 
     text_report += "\n\nCHANGES IN REFERENCES AND PMIDS BY TAXON"
     text_report += "\ntaxon\treferences\tpmids"
-    for key, val in json_changes["detailed_changes"]["references"]["all"]["by_taxon"].items():
-        pmid_val = json_changes["detailed_changes"]["references"]["pmids"]["by_taxon"][key] if key in json_changes["detailed_changes"]["references"]["pmids"]["by_taxon"] else 0
+    for key, val in json_changes["detailed_changes"]["references"]["all"]["by_filtered_taxon"].items():
+        pmid_val = json_changes["detailed_changes"]["references"]["pmids"]["by_filtered_taxon"][key] if key in json_changes["detailed_changes"]["references"]["pmids"]["by_filtered_taxon"] else 0
         text_report += "\n" + key + "\t" + str(val) + "\t" + str(pmid_val)
 
     return text_report
