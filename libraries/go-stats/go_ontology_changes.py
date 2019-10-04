@@ -96,7 +96,7 @@ def compute_changes(current_obo_url, previous_obo_url):
                     reasons[key] = { "current" : reason['current'], "previous" : reason['previous'] }
                 xrefs_changes[newterm.namespace].append({ "id" : id, "name": newterm.name , "changes": reasons })
                 xrefs_count += 1
-                xrefs_total_count += len(reasons)
+                xrefs_total_count += newterm.count_xrefs_differences(oldterm)
     print(str(xrefs_count) + " terms xrefs changes since last revision")
 
     # Existing GO Terms with meta changes (synonyms, NO XREFS, definition, etc)
@@ -154,6 +154,7 @@ def compute_changes(current_obo_url, previous_obo_url):
         },
         "changes" : {
             "created_terms" : created_count,
+            "valid_terms" : len(currentgo.get_terms(TermState.VALID)) - len(oldgo.get_terms(TermState.VALID)),
             "obsolete_terms" : obsoleted_count,
             "merged_terms" : merged_count,
             "biological_process_terms" : len(currentgo.get_terms_in("biological_process")) - len(oldgo.get_terms_in("biological_process")),

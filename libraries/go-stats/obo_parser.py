@@ -204,6 +204,19 @@ class Term:
             reasons["xrefs"] = {"current": value(self.xrefs), "previous": value(other.xrefs) }
         return reasons
 
+    def count_xrefs_differences(self, other):
+        count = 0
+
+        # count for new xrefs
+        for xref in self.xrefs:
+            if xref not in other.xrefs:
+                count += 1
+        # count for removed xrefs
+        for xref in other.xrefs:
+            if xref not in self.xrefs:
+                count += 1
+        return count
+
     def explain_meta_differences(self, other, includeXRefs = True):
         reasons = {}
         if self.id != other.id:
