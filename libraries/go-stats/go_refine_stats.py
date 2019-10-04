@@ -141,8 +141,12 @@ def main(argv):
         "annotations" : {
             "total" : json_stats["annotations"]["total"],
             "total_no_pb" : json_stats_no_pb["annotations"]["total"],
-            "by_aspect" : json_stats["annotations"]["by_aspect"],
-            "by_aspect_no_pb" : json_stats_no_pb["annotations"]["by_aspect"],
+            "by_aspect" : {
+                "P" : json_stats["annotations"]["by_aspect"]["P"],
+                "F" : json_stats["annotations"]["by_aspect"]["F"],
+                "C" : json_stats["annotations"]["by_aspect"]["C"],
+                "B" : json_stats["annotations"]["by_aspect"]["F"] - json_stats_no_pb["annotations"]["by_aspect"]["F"]
+            },
             "by_bioentity_type_cluster" : json_stats["annotations"]["by_bioentity_type"]["cluster"],
             "by_bioentity_type_cluster_no_pb" : json_stats_no_pb["annotations"]["by_bioentity_type"]["cluster"],
             "by_evidence_cluster" : json_stats["annotations"]["by_evidence"]["cluster"],
