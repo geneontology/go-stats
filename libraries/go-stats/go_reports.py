@@ -117,8 +117,16 @@ def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
                     "added" : len(addrem_species["added"]),
                     "removed" : len(addrem_species["removed"])
                 },
-                "references" : current_stats["references"]["all"]["total"] - previous_stats["references"]["all"]["total"],
-                "pmids" : current_stats["references"]["pmids"]["total"] - previous_stats["references"]["pmids"]["total"]
+                "references" : {
+                    "total" : current_stats["references"]["all"]["total"] - previous_stats["references"]["all"]["total"],
+                    "added" : 0,
+                    "removed" : 0
+                },
+                "pmids" : {
+                    "total" : current_stats["references"]["pmids"]["total"] - previous_stats["references"]["pmids"]["total"],
+                    "added" : 0,
+                    "removed" : 0
+                }
             },
         },
         "detailed_changes" : {
