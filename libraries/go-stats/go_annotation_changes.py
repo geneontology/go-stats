@@ -75,8 +75,8 @@ def create_text_report(json_changes):
 
     text_report += "\n\nSUMMARY: CURRENT RELEASE (" + json_changes["summary"]["current"]["release_date"] + ")"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["current"]["bioentities"])
-    text_report += "\nannotated taxa:\t" + str(json_changes["summary"]["current"]["taxa"])
-    text_report += "\nannotated filtered taxa:\t" + str(json_changes["summary"]["current"]["taxa_filtered"]) + " (with more than 1000 annotations)"
+    text_report += "\ntaxa:\t" + str(json_changes["summary"]["current"]["taxa"])
+    text_report += "\nfiltered taxa:\t" + str(json_changes["summary"]["current"]["taxa_filtered"]) + " (with more than 1000 annotations)"
     text_report += "\nannotations:\t" + str(json_changes["summary"]["current"]["annotations"]["total"])
     for key, val in json_changes["summary"]["current"]["annotations"]["by_aspect"].items():
         text_report += "\nannotations by aspect " + key + ":\t" + str(val)
@@ -87,8 +87,8 @@ def create_text_report(json_changes):
 
     text_report += "\n\nSUMMARY: PREVIOUS RELEASE (" + json_changes["summary"]["previous"]["release_date"] + ")"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["previous"]["bioentities"])
-    text_report += "\nannotated taxa:\t" + str(json_changes["summary"]["previous"]["taxa"])
-    text_report += "\nannotated filtered taxa:\t" + str(json_changes["summary"]["previous"]["taxa_filtered"]) + " (with more than 1000 annotations)"
+    text_report += "\ntaxa:\t" + str(json_changes["summary"]["previous"]["taxa"])
+    text_report += "\nfiltered taxa:\t" + str(json_changes["summary"]["previous"]["taxa_filtered"]) + " (with more than 1000 annotations)"
     text_report += "\nannotations:\t" + str(json_changes["summary"]["previous"]["annotations"]["total"])
     for key, val in json_changes["summary"]["previous"]["annotations"]["by_aspect"].items():
         text_report += "\nannotations by aspect " + key + ":\t" + str(val)
@@ -99,8 +99,10 @@ def create_text_report(json_changes):
 
     text_report += "\n\nSUMMARY: DIFF BETWEEN RELEASES"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["current"]["bioentities"] - json_changes["summary"]["previous"]["bioentities"])
-    text_report += "\nannotated taxa:\t" + str(json_changes["summary"]["current"]["taxa"] - json_changes["summary"]["previous"]["taxa"]) + "\t"
-    text_report += "\nannotated filtered taxa:\t" + str(json_changes["summary"]["current"]["taxa_filtered"] - json_changes["summary"]["previous"]["taxa_filtered"]) + " (with more than 1000 annotations)"
+    text_report += "\ntaxa:\t" + str(json_changes["summary"]["current"]["taxa"] - json_changes["summary"]["previous"]["taxa"]) + "\t"
+    text_report += "\nfiltered taxa:\t" + str(json_changes["summary"]["current"]["taxa_filtered"] - json_changes["summary"]["previous"]["taxa_filtered"]) + " (with more than 1000 annotations)"
+    text_report += "\nadded taxa\t" + str(json_changes["summary"]["changes"]["taxa"]["added"])
+    text_report += "\nremoved taxa\t" + str(json_changes["summary"]["changes"]["taxa"]["removed"])
     text_report += "\nannotations:\t" + str(json_changes["summary"]["current"]["annotations"]["total"] - json_changes["summary"]["previous"]["annotations"]["total"])
     for key, val in json_changes["summary"]["current"]["annotations"]["by_aspect"].items():
         text_report += "\nannotations by aspect " + key + ":\t" + str(val - json_changes["summary"]["previous"]["annotations"]["by_aspect"][key])
@@ -114,6 +116,8 @@ def create_text_report(json_changes):
     
     for key, val in json_changes["summary"]["changes"]["pmids"].items():
         text_report += "\pmids " + key + ":\t" + str(json_changes["summary"]["changes"]["pmids"][key])
+
+
 
 
     text_report += "\n\nDETAILED CHANGES"
@@ -148,11 +152,6 @@ def create_text_report(json_changes):
             text_report += "\t" + str(val[type]["A"]) if type in val else "\t0"
 
 
-    text_report += "\n\nCHANGES IN ANNOTATED TAXA\n"
-    text_report += "total\t" + str(json_changes["summary"]["changes"]["taxa"]["total"])
-    text_report += "\nfiltered\t" + str(json_changes["summary"]["changes"]["taxa"]["filtered"]) + " (with more than 1000 annotations)"
-    text_report += "\nadded\t" + str(json_changes["summary"]["changes"]["taxa"]["added"])
-    text_report += "\nremoved\t" + str(json_changes["summary"]["changes"]["taxa"]["removed"])
 
 
     text_report += "\n\nCHANGES IN ANNOTATIONS\n"
