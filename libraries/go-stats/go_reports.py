@@ -88,7 +88,9 @@ def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
             },
         },
         "detailed_changes" : {
-            "annotations" : json_annot_changes["annotations"]
+            "annotations" : json_annot_changes["annotations"],
+            "bioentities" : json_annot_changes["bioentities"],
+            "references" : json_annot_changes["references"]
         }
     }
     return altered_json_annot_changes  
