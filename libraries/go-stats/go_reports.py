@@ -68,10 +68,9 @@ def added_removed_species(current_stats, previous_stats):
 
 
 def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
-    print("INITIAL: ", json_annot_changes)
-
     addrem_species = added_removed_species(current_stats, previous_stats)
-    print("DEBUG: ", addrem_species)
+    # print("INITIAL: ", json_annot_changes)
+    # print("DEBUG: ", addrem_species)
 
     altered_json_annot_changes = {
         "releases_compared" : {

@@ -173,11 +173,11 @@ def create_text_report(json_changes):
         text_report += "\n" + key + "\t" + str(val)
 
     
-    text_report += "\n\n" + len(json_changes["detailed_changes"]["taxa"]["added"]) + " ADDED TAXA"
+    text_report += "\n\n" + str(len(json_changes["detailed_changes"]["taxa"]["added"])) + " ADDED TAXA"
     for key, val in json_changes["detailed_changes"]["taxa"]["added"].items():
         text_report += "\n" + key + "\t" + str(val)
     
-    text_report += "\n\n" + len(json_changes["detailed_changes"]["taxa"]["removed"]) + " REMOVED TAXA"
+    text_report += "\n\n" + str(len(json_changes["detailed_changes"]["taxa"]["removed"])) + " REMOVED TAXA"
     for key, val in json_changes["detailed_changes"]["taxa"]["removed"].items():
         text_report += "\n" + key + "\t" + str(val)
 
