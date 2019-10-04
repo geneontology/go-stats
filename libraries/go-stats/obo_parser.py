@@ -208,13 +208,19 @@ class Term:
         count = 0
 
         # count for new xrefs
-        for xref in self.xrefs:
-            if xref not in other.xrefs:
-                count += 1
+        if self.xrefs:
+            for xref in self.xrefs:
+                if xref not in other.xrefs:
+                    count += 1
+        else:
+            count += other.xrefs
         # count for removed xrefs
-        for xref in other.xrefs:
-            if xref not in self.xrefs:
-                count += 1
+        if other.xrefs:
+            for xref in other.xrefs:
+                if xref not in self.xrefs:
+                    count += 1
+        else:
+            count += self.xrefs
         return count
 
     def explain_meta_differences(self, other, includeXRefs = True):
