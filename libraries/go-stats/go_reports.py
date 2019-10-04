@@ -57,12 +57,12 @@ def added_removed_species(current_stats, previous_stats):
     for taxon in current_stats["annotations"]["by_taxon"]:
         taxon_id = taxon.split("|")[0]
         if not has_taxon(previous_stats, taxon_id):
-            results["added"].append(taxon)
+            results["added"].append(taxon + "\t" + current_stats["annotations"]["by_taxon"][taxon])
 
     for taxon in previous_stats["annotations"]["by_taxon"]:
         taxon_id = taxon.split("|")[0]
         if not has_taxon(current_stats, taxon_id):
-            results["removed"].append(taxon)
+            results["removed"].append(taxon + "\t" + previous_stats["annotations"]["by_taxon"][taxon])
         
     return results
 

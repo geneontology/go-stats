@@ -137,8 +137,10 @@ def create_text_report(json_changes):
 
 
     text_report += "\n\nCHANGES IN ANNOTATED TAXA\n"
-    text_report += "total\t" + str(json_changes["summary"]["changes"]["taxa"])
-    text_report += "\nfiltered\t" + str(json_changes["summary"]["changes"]["taxa_filtered"]) + " (with more than 1000 annotations)"
+    text_report += "total\t" + str(json_changes["summary"]["changes"]["taxa"]["total"])
+    text_report += "\nfiltered\t" + str(json_changes["summary"]["changes"]["taxa"]["filtered"]) + " (with more than 1000 annotations)"
+    text_report += "\nadded\t" + str(json_changes["summary"]["changes"]["taxa"]["added"])
+    text_report += "\nremoved\t" + str(json_changes["summary"]["changes"]["taxa"]["removed"])
 
 
     text_report += "\n\nCHANGES IN ANNOTATIONS\n"
@@ -168,6 +170,15 @@ def create_text_report(json_changes):
     
     text_report += "\n\nCHANGES IN ANNOTATIONS BY TAXON"
     for key, val in json_changes["detailed_changes"]["annotations"]["by_taxon"].items():
+        text_report += "\n" + key + "\t" + str(val)
+
+    
+    text_report += "\n\n" + len(json_changes["detailed_changes"]["taxa"]["added"]) + " ADDED TAXA"
+    for key, val in json_changes["detailed_changes"]["taxa"]["added"].items():
+        text_report += "\n" + key + "\t" + str(val)
+    
+    text_report += "\n\n" + len(json_changes["detailed_changes"]["taxa"]["removed"]) + " REMOVED TAXA"
+    for key, val in json_changes["detailed_changes"]["taxa"]["removed"].items():
         text_report += "\n" + key + "\t" + str(val)
 
 
