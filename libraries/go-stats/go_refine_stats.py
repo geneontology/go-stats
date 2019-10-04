@@ -90,6 +90,7 @@ def main(argv):
     ontology = json_onto_changes["summary"]["current"].copy()
     del ontology["release_date"]
     ontology["changes_created_terms"] = json_onto_changes["summary"]["changes"]["created_terms"]
+    ontology["changes_valid_terms"] = json_onto_changes["summary"]["changes"]["valid_terms"]
     ontology["changes_obsolete_terms"] = json_onto_changes["summary"]["changes"]["obsolete_terms"]
     ontology["changes_merged_terms"] = json_onto_changes["summary"]["changes"]["merged_terms"]
 
