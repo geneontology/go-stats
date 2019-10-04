@@ -228,9 +228,10 @@ def main(argv):
     for taxon in go_stats.reference_genomes_ids:
         key = go_stats.taxon_label(taxon)
         bioentities_by_reference_genome[key] = json_stats["bioentities"]["by_filtered_taxon"]["cluster"][key] if key in json_stats["bioentities"]["by_filtered_taxon"]["cluster"] else { }
-        for btype in bioentities_by_reference_genome[key]:
-            val = json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"][key]["F"] if (key in json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"] and "F" in json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"][key]) else 0
-            bioentities_by_reference_genome[key][btype]["B"] = bioentities_by_reference_genome[key][btype]["F"] - val
+        # TODO: we don't have a way to filter on bioentity documents without direct annotations to PB ?
+        # for btype in bioentities_by_reference_genome[key]:
+        #     val = json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"][key]["F"] if (key in json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"] and "F" in json_stats_no_pb["bioentities"]["by_filtered_taxon"]["cluster"][key]) else 0
+        #     bioentities_by_reference_genome[key][btype]["B"] = bioentities_by_reference_genome[key][btype]["F"] - val
 
     references_by_reference_genome = { }
     for taxon in go_stats.reference_genomes_ids:
