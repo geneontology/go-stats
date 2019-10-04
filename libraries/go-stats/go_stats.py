@@ -315,7 +315,7 @@ def bioentity_type(str_type):
     In a nutshell, collapse all RNA related types into RNA
     """
     if "RNA" in str_type or "ribozyme" in str_type or "transcript" in str_type:
-        return "RNA"
+        return "RNA_cluster"
     return str_type
     
 def golr_fetch_bioentities_taxon(taxon):

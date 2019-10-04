@@ -42,8 +42,37 @@ def minus_dict(dict1, dict2):
     return new_dict    
 
 
+def has_taxon(stats, taxon_id):
+    for taxon in stats["annotations"]["by_taxon"]:
+        if taxon_id in taxon:
+            return True
+    return False
+
+def added_removed_species(current_stats, previous_stats):
+    results = {
+        "added" : [],
+        "removed" : []
+    }
+
+    for taxon in current_stats["annotations"]["by_taxon"]:
+        taxon_id = taxon.split("|")[0]
+        if not has_taxon(previous_stats, taxon_id):
+            results["added"].append(taxon)
+
+    for taxon in previous_stats["annotations"]["by_taxon"]:
+        taxon_id = taxon.split("|")[0]
+        if not has_taxon(current_stats, taxon_id):
+            results["removed"].append(taxon)
+        
+    return results
+
+
 def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
     print("INITIAL: ", json_annot_changes)
+
+    addrem_species = added_removed_species(current_stats, previous_stats)
+    print("DEBUG: ", addrem_species)
+
     altered_json_annot_changes = {
         "releases_compared" : {
             "current" : current_stats["release_date"],
@@ -81,14 +110,19 @@ def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
                     "by_evidence_cluster" : minus_dict(current_stats["annotations"]["by_evidence"]["cluster"], previous_stats["annotations"]["by_evidence"]["cluster"]),
                 },
                 "bioentities" : current_stats["bioentities"]["total"] - previous_stats["bioentities"]["total"],
-                "taxa" : current_stats["taxa"]["total"] - previous_stats["taxa"]["total"],
-                "taxa_filtered" : current_stats["taxa"]["filtered"] - previous_stats["taxa"]["filtered"],
+                "taxa" : {
+                    "total" : current_stats["taxa"]["total"] - previous_stats["taxa"]["total"],
+                    "filtered" : current_stats["taxa"]["filtered"] - previous_stats["taxa"]["filtered"],
+                    "added" : len(addrem_species["added"]),
+                    "removed" : len(addrem_species["removed"])
+                },
                 "references" : current_stats["references"]["all"]["total"] - previous_stats["references"]["all"]["total"],
                 "pmids" : current_stats["references"]["pmids"]["total"] - previous_stats["references"]["pmids"]["total"]
             },
         },
         "detailed_changes" : {
             "annotations" : json_annot_changes["annotations"],
+            "taxa" : addrem_species,
             "bioentities" : json_annot_changes["bioentities"],
             "references" : json_annot_changes["references"]
         }
