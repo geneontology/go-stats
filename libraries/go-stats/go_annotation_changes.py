@@ -126,7 +126,7 @@ def create_text_report(json_changes):
     for key, val in json_changes["detailed_changes"]["bioentities"]["by_type"]["all"].items():
         text_report += "\n" + key + "\t" + str(val)
 
-    text_report += "\n\nCHANGES IN ANNOTATED BIOENTITIES BY FILTERED TAXON AND BY TYPE (CLUSTER)"
+    text_report += "\n\nCHANGES IN ANNOTATED BIOENTITIES BY FILTERED TAXON AND BY BIOENTITY TYPE (CLUSTER)"
     text_report += "\ntaxon"
     for type, nb in json_changes["detailed_changes"]["bioentities"]["by_type"]["cluster"].items():
         text_report += "\t" + type
@@ -135,7 +135,7 @@ def create_text_report(json_changes):
         for type, nb in json_changes["detailed_changes"]["bioentities"]["by_type"]["cluster"].items():
             text_report += "\t" + str(val[type]["A"]) if type in val else "\t0"
 
-    text_report += "\n\nCHANGES IN ANNOTATED BIOENTITIES BY FILTERED TAXON AND BY TYPE (ALL)"
+    text_report += "\n\nCHANGES IN ANNOTATED BIOENTITIES BY FILTERED TAXON AND BY BIOENTITY TYPE (ALL)"
     text_report += "\ntaxon"
     for type, nb in json_changes["detailed_changes"]["bioentities"]["by_type"]["all"].items():
         text_report += "\t" + type
