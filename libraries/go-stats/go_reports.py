@@ -43,6 +43,7 @@ def minus_dict(dict1, dict2):
 
 
 def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
+    print("INITIAL: ", json_annot_changes)
     altered_json_annot_changes = {
         "releases_compared" : {
             "current" : current_stats["release_date"],
@@ -86,7 +87,9 @@ def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
                 "pmids" : current_stats["references"]["pmids"]["total"] - previous_stats["references"]["pmids"]["total"]
             },
         },
-        "detailed_changes" : json_annot_changes["annotations"] 
+        "detailed_changes" : {
+            "annotations" : json_annot_changes["annotations"]
+        }
     }
     return altered_json_annot_changes  
 
