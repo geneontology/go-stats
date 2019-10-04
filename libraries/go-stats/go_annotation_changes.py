@@ -172,12 +172,12 @@ def create_text_report(json_changes):
 
     
     text_report += "\n\n" + str(len(json_changes["detailed_changes"]["taxa"]["added"])) + " ADDED TAXA"
-    for taxon in json_changes["detailed_changes"]["taxa"]["added"]:
-        text_report += "\n" + taxon
+    for taxon in json_changes["detailed_changes"]["taxa"]["added"].items():
+        text_report += "\n" + key + "\t" + str(val)
     
     text_report += "\n\n" + str(len(json_changes["detailed_changes"]["taxa"]["removed"])) + " REMOVED TAXA"
-    for taxon in json_changes["detailed_changes"]["taxa"]["removed"]:
-        text_report += "\n" + taxon
+    for taxon in json_changes["detailed_changes"]["taxa"]["removed"].items():
+        text_report += "\n" + key + "\t" + str(val)
 
 
     text_report += "\n\nCHANGES IN REFERENCES AND PMIDS\n"
