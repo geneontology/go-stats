@@ -72,10 +72,9 @@ def create_text_report(json_changes):
     text_report = ""
 
     text_report = "CHANGES IN GO ANNOTATIONS"
-    text_report += "\ncurrent_release_date\t" + json_changes["releases_compared"]["current"]    
-    text_report += "\nprevious_release_date\t" + json_changes["releases_compared"]["previous"]
 
     text_report += "\n\nSUMMARY: CURRENT_RELEASE (" + json_changes["releases_compared"]["current"] + ")"
+    text_report += "\nrelease_date\t" + json_changes["summary"]["current"]["release_date"]
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["current"]["bioentities"])
     text_report += "\nannotated taxa:\t" + str(json_changes["summary"]["current"]["taxa"]) + "\t" + str(json_changes["summary"]["current"]["taxa_filtered"]) + " (with more than 1000 annotations)"
     text_report += "\nannotations:\t" + str(json_changes["summary"]["current"]["annotations"]["total"])
@@ -85,6 +84,7 @@ def create_text_report(json_changes):
         text_report += "\nannotations by evidence cluster " + key + ":\t" + str(val)
 
     text_report += "\n\nSUMMARY: PREVIOUS (" + json_changes["releases_compared"]["previous"] + ")"
+    text_report += "\nrelease_date\t" + json_changes["summary"]["previous"]["release_date"]
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["previous"]["bioentities"])
     text_report += "\nannotated taxa:\t" + str(json_changes["summary"]["previous"]["taxa"]) + "\t" + str(json_changes["summary"]["previous"]["taxa_filtered"]) + " (with more than 1000 annotations)"
     text_report += "\nannotations:\t" + str(json_changes["summary"]["previous"]["annotations"]["total"])

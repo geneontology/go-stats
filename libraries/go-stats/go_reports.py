@@ -73,12 +73,13 @@ def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
     # print("DEBUG: ", addrem_species)
 
     altered_json_annot_changes = {
-        "releases_compared" : {
-            "current" : current_stats["release_date"],
-            "previous" : previous_stats["release_date"]
-        },
+        # "releases_compared" : {
+        #     "current" : current_stats["release_date"],
+        #     "previous" : previous_stats["release_date"]
+        # },
         "summary" : {
             "current" : {
+                "release_date" : current_stats["release_date"],
                 "annotations" : {
                     "total" : current_stats["annotations"]["total"],
                     "by_aspect" : current_stats["annotations"]["by_aspect"],
@@ -91,6 +92,7 @@ def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
                 "pmids" : current_stats["references"]["pmids"]["total"]
             },
             "previous" : {
+                "release_date" : previous_stats["release_date"],
                 "annotations" : {
                     "total" : previous_stats["annotations"]["total"],
                     "by_aspect" : previous_stats["annotations"]["by_aspect"],
