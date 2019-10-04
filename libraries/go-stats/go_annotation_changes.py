@@ -75,10 +75,6 @@ def create_text_report(json_changes):
     text_report += "\ncurrent_release_date\t" + json_changes["releases_compared"]["current"]    
     text_report += "\nprevious_release_date\t" + json_changes["releases_compared"]["previous"]
 
-    # text_report += "\n\nCHANGES IN TERMS\n"
-    # text_report += "total\t" + str(json_changes["terms"]["total"]) + "\nobsoleted\t" + str(json_changes["terms"]["obsoleted"]) + "\nvalid total\t" + str(json_changes["terms"]["valid"])
-    # text_report += "\nvalid P\t" + str(json_changes["terms"]["by_aspect"]["P"]) + "\nvalid F\t" + str(json_changes["terms"]["by_aspect"]["F"]) + "\nvalid C\t" + str(json_changes["terms"]["by_aspect"]["C"])
-
     text_report += "\n\nSUMMARY: CURRENT_RELEASE (" + json_changes["releases_compared"]["current"] + ")"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["current"]["bioentities"])
     text_report += "\nannotated taxa:\t" + str(json_changes["summary"]["current"]["taxa"]) + "\t" + str(json_changes["summary"]["current"]["taxa_filtered"]) + " (with more than 1000 annotations)"
