@@ -81,6 +81,8 @@ def create_text_report(json_changes):
         text_report += "\nannotations by aspect " + key + ":\t" + str(val)
     for key, val in json_changes["summary"]["current"]["annotations"]["by_evidence_cluster"].items():
         text_report += "\nannotations by evidence cluster " + key + ":\t" + str(val)
+    text_report += "\nreferences:\t" + str(json_changes["summary"]["current"]["annotations"]["references"])
+    text_report += "\npmids:\t" + str(json_changes["summary"]["current"]["annotations"]["pmids"])
 
     text_report += "\n\nSUMMARY: PREVIOUS RELEASE (" + json_changes["summary"]["previous"]["release_date"] + ")"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["previous"]["bioentities"])
@@ -90,6 +92,8 @@ def create_text_report(json_changes):
         text_report += "\nannotations by aspect " + key + ":\t" + str(val)
     for key, val in json_changes["summary"]["previous"]["annotations"]["by_evidence_cluster"].items():
         text_report += "\nannotations by evidence cluster " + key + ":\t" + str(val)
+    text_report += "\nreferences:\t" + str(json_changes["summary"]["previous"]["annotations"]["references"])
+    text_report += "\npmids:\t" + str(json_changes["summary"]["previous"]["annotations"]["pmids"])
 
     text_report += "\n\nSUMMARY: DIFF BETWEEN RELEASES"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["current"]["bioentities"] - json_changes["summary"]["previous"]["bioentities"])
@@ -101,6 +105,13 @@ def create_text_report(json_changes):
     #     text_report += "\nannotations by evidence cluster " + key + ":\t" + str(val - json_changes["summary"]["current"]["annotations"]["by_evidence_cluster"][key])
     for key, val in json_changes["summary"]["changes"]["annotations"]["by_evidence_cluster"].items():
         text_report += "\nannotations by evidence cluster " + key + ":\t" + str(json_changes["summary"]["changes"]["annotations"]["by_evidence_cluster"][key])
+
+    for key, val in json_changes["summary"]["changes"]["references"].items():
+        text_report += "\nreferences " + key + ":\t" + str(json_changes["summary"]["changes"]["references"][key])
+    
+    for key, val in json_changes["summary"]["changes"]["pmids"].items():
+        text_report += "\pmids " + key + ":\t" + str(json_changes["summary"]["changes"]["pmids"][key])
+
 
     text_report += "\n\nDETAILED CHANGES"
 
