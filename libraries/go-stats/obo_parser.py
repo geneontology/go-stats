@@ -206,8 +206,6 @@ class Term:
 
     def count_xrefs_differences(self, other):
         count = 0
-        print("self.xrefs: ", self.xrefs)
-        print("other.xrefs: ", other.xrefs)
 
         len_self = len(self.xrefs) if self.xrefs else 0
         len_other = len(other.xrefs) if other.xrefs else 0
