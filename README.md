@@ -26,9 +26,9 @@ The code compute a number of views over the GO-CAMs data (e.g. models, gene prod
 * [aggregated-go-stats-summaries.json](http://current.geneontology.org/release_stats/aggregated-go-stats-summaries.json): summary statistics for all [GO releases stored in Zenodo](https://zenodo.org/record/3477535)
 * [go-stats.json](http://current.geneontology.org/release_stats/go-stats.json): detailed statistics
 * [go-stats-no-pb.json](http://current.geneontology.org/release_stats/go-stats-no-pb.json): detailed statistics (excluding direct annotation to *p*rotein *b*inding)
-* [go-ontology-changes.json](http://current.geneontology.org/release_stats/go-ontology-changes.json)
+* [go-ontology-changes.json](http://current.geneontology.org/release_stats/go-ontology-changes.json): changes in the ontology since the last release
 * [go-ontology-changes.tsv](http://current.geneontology.org/release_stats/go-ontology-changes.tsv)
-* [go-annotation-changes.json](http://current.geneontology.org/release_stats/go-annotation-changes.json)
+* [go-annotation-changes.json](http://current.geneontology.org/release_stats/go-annotation-changes.json): changes in the annotations since the last release
 * [go-annotation-changes.tsv](http://current.geneontology.org/release_stats/go-annotation-changes.tsv)
 
 ## General GO-CAM files for the current release
