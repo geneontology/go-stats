@@ -21,14 +21,18 @@ The code send queries to GOLr to fetch statistics about the GO annotations (e.g.
 ## GO Update GO-CAMs
 The code compute a number of views over the GO-CAMs data (e.g. models, gene products, go terms, etc) using the GO SPARQL endpoint.
 
-## File Access
-* [go-meta.json](https://geneontology-public.s3.amazonaws.com/go-meta.json): basic statistics
-* [go-stats.json](https://geneontology-public.s3.amazonaws.com/go-stats.json): detailed statistics
-* [go-last-changes.json](https://geneontology-public.s3.amazonaws.com/go-last-changes.json): changes in the ontology
-* [go-terms-aspect.json](https://geneontology-public.s3.amazonaws.com/go-terms-aspect.json): terms per aspect (BP/MF/CC)
-* [go-annotated-gps.json](https://geneontology-public.s3.amazonaws.com/go-annotated-gps.json): annotations per gene
+## General GO stats file access for the current release
+* [go-stats-summary.json](http://current.geneontology.org/release_stats/go-stats-summary.json): summary statistics
+* [aggregated-go-stats-summaries.json](http://current.geneontology.org/release_stats/aggregated-go-stats-summaries.json): summary statistics for all [GO releases stored in Zenodo](https://zenodo.org/record/3477535)
+* [go-stats.json](http://current.geneontology.org/release_stats/go-stats.json): detailed statistics
+* [go-stats-no-pb.json](http://current.geneontology.org/release_stats/go-stats-no-pb.json): detailed statistics (excluding direct annotation to *p*rotein *b*inding)
+* [go-ontology-changes.json](http://current.geneontology.org/release_stats/go-ontology-changes.json)
+* [go-ontology-changes.tsv](http://current.geneontology.org/release_stats/go-ontology-changes.tsv)
+* [go-annotation-changes.json](http://current.geneontology.org/release_stats/go-annotation-changes.json)
+* [go-annotation-changes.tsv](http://current.geneontology.org/release_stats/go-annotation-changes.tsv)
+
+## General GO-CAM files for the current release
 * [gocam-models.json](https://geneontology-public.s3.amazonaws.com/gocam/gocam-models.json): detailed list of models
 * [gocam-pmids.json](https://geneontology-public.s3.amazonaws.com/gocam/gocam-pmids.json): list of articles/references per model
 * [gocam-gps.json](https://geneontology-public.s3.amazonaws.com/gocam/gocam-gps.json): list of gene products permodel
 * [gocam-goterms](https://geneontology-public.s3.amazonaws.com/gocam/gocam-goterms.json): list of GO terms per model
-
