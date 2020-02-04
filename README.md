@@ -1,5 +1,5 @@
 # GO-Stats
-Compute statistics and changes for both the GO ontology and annotations at every release.
+Compute statistics and changes for both the GO ontology and annotations at every release and snapshot.
 
 The following details each folder of this repository:
 
