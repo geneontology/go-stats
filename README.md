@@ -1,5 +1,5 @@
 # GO-stats for the GO release pipeline
-Compute statistics and changes for both the GO ontology and annotations at every release and snapshot.
+Compute statistics and changes for both the GO ontology and annotations at every release and snapshot. The libraries/go-stats/ folder contains the script that are cloned and executed in the GO pipeline from [go-site/scripts](https://github.com/geneontology/go-site/tree/master/scripts)
 
 The following details each folder of this repository:
 
