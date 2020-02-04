@@ -42,7 +42,7 @@ general command:
 Usage: python go_reports.py -g <golr_url> -d <release_date> -s <previous_stats_url> -n <previous_stats_no_pb_url> -c <current_obo_url> -p <previous_obo_url> -o <output_rep>python go_reports.py -g <golr_url> -d <release_date> -s <previous_stats_url> -n <previous_stats_no_pb_url> -c <current_obo_url> -p <previous_obo_url> -o <output_rep>
 
 Example: 
-python3 go_reports.py -g http://golr-aux.geneontology.io/solr/ -d 2020-04-02 -s http://current.geneontology.org/release_stats/go-stats.json -n http://current.geneontology.org/release_stats/go-stats-no-pb.json -c http://current.geneontology.org/ontology/go.obo -p http://release.geneontology.org/2019-12-09/ontology/go.obo -o output/
+python3 go_reports.py -g http://golr-aux.geneontology.io/solr/ -d 2020-04-02 -s http://release.geneontology.org/2019-12-09/release_stats/go-stats.json -n http://release.geneontology.org/2019-12-09/release_stats/go-stats-no-pb.json -c http://current.geneontology.org/ontology/go.obo -p http://release.geneontology.org/2019-12-09/ontology/go.obo -o output/
 ```
 
 
