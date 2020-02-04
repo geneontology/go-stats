@@ -175,6 +175,36 @@ def create_text_report(json_changes):
     for key, val in json_changes["detailed_changes"]["annotations"]["by_evidence"]["all"].items():
         text_report += "\n" + key + "\t" + str(val)
     
+
+    ev_all = []
+    ev_cluster = []
+    for taxon, val in json_changes["detailed_changes"]["annotations"]["by_model_organism"].items():
+            for evidence, evival in val["by_evidence_cluster"].items():            
+                if evidence not in ev_cluster:
+                    ev_cluster.append(evidence)    
+    for taxon, val in json_changes["detailed_changes"]["annotations"]["by_model_organism"].items():
+            for evidence, evival in val["by_evidence"].items():            
+                if evidence not in ev_all:
+                    ev_all.append(evidence)    
+    ev_all.sort()
+    ev_cluster.sort()
+    text_report += "\n\nCHANGES IN ANNOTATIONS BY MODEL ORGANISM AND EVIDENCE (CLUSTER)"
+    text_report += "\nTAXON\tEVIDENCE CLUSTER\tALL\tP\tF\tC"
+    for taxon, val in json_changes["detailed_changes"]["annotations"]["by_model_organism"].items():
+        for evidence in ev_cluster:
+            evival = json_changes["detailed_changes"]["annotations"]["by_model_organism"][taxon]["by_evidence_cluster"][evidence]
+            if evival:
+                text_report += "\n" + taxon + "\t" + evidence + "\t" + evival["A"] + "\t" + evival["P"] + "\t" + evival["F"] + "\t" + evival["C"]
+
+    text_report += "\n\nCHANGES IN ANNOTATIONS BY MODEL ORGANISM AND EVIDENCE (ALL)"
+    text_report += "\nTAXON\tEVIDENCE\tALL\tP\tF\tC"
+    for taxon, val in json_changes["detailed_changes"]["annotations"]["by_model_organism"].items():
+        for evidence in ev_all:
+            evival = json_changes["detailed_changes"]["annotations"]["by_model_organism"][taxon]["by_evidence"][evidence]
+            if evival:
+                text_report += "\n" + taxon + "\t" + evidence + "\t" + evival["A"] + "\t" + evival["P"] + "\t" + evival["F"] + "\t" + evival["C"]
+
+
     text_report += "\n\nCHANGES IN ANNOTATIONS BY GROUP"
     for key, val in json_changes["detailed_changes"]["annotations"]["by_group"].items():
         text_report += "\n" + key + "\t" + str(val)
