@@ -39,6 +39,8 @@ def main(argv):
             sys.exit()
         elif opt in ("-g", "--golrurl"):
             golr_url = arg
+            if not golr_url.endswith("/"):
+                golr_url = golr_url + "/"
         elif opt in ("-s", "--pstats"):
             previous_stats_url = arg
         elif opt in ("-n", "--pnstats"):

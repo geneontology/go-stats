@@ -649,6 +649,8 @@ def main(argv):
             sys.exit()
         elif opt in ("-g", "--golrurl"):
             golr_url = arg
+            if not golr_url.endswith("/"):
+                golr_url = golr_url + "/"
         elif opt in ("-o", "--orep"):
             output_rep = arg
         elif opt in ("-d", "--date"):
