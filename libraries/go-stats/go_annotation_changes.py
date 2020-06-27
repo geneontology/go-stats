@@ -69,10 +69,8 @@ def missing_fields(current_json, previous_json):
     return missing
 
 
-def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
+def alter_annotation_changes(current_stats, previous_stats, current_references, previous_references, json_annot_changes):
     addrem_species = utils.added_removed_species(current_stats, previous_stats)
-    # print("INITIAL: ", json_annot_changes)
-    # print("DEBUG: ", addrem_species)
 
     altered_json_annot_changes = {
         # "releases_compared" : {
@@ -141,6 +139,24 @@ def alter_annotation_changes(current_stats, previous_stats, json_annot_changes):
             "references" : json_annot_changes["references"]
         }
     }
+
+    # if pmid lists are provided, add the information to the stats
+    if current_references and previous_references:
+        added_references = list(filter(lambda x: x not in previous_references, current_references))
+        removed_references = list(filter(lambda x: x not in current_references, previous_references))
+
+        added_pmids = list(filter(lambda x: "PMID:" in x, added_references))
+        removed_pmids = list(filter(lambda x: "PMID:" in x, removed_references))
+
+        altered_json_annot_changes["summary"]["changes"]["references"]["added"] = len(added_references)
+        altered_json_annot_changes["summary"]["changes"]["references"]["removed"] = len(removed_references)
+
+        altered_json_annot_changes["summary"]["changes"]["pmids"]["added"] = len(added_pmids)
+        altered_json_annot_changes["summary"]["changes"]["pmids"]["removed"] = len(removed_pmids)
+
+        altered_json_annot_changes["detailed_changes"]["references"]
+
+
     return altered_json_annot_changes  
 
 
@@ -400,7 +416,7 @@ def main(argv):
     previous_stats = requests.get(previous_stats_url).json()
     json_changes = compute_changes(current_stats, previous_stats)
 
-    json_changes = alter_annotation_changes(current_stats, previous_stats, json_changes)
+    json_changes = alter_annotation_changes(current_stats, previous_stats, None, None, json_changes)
 
     print("Saving Stats to <" + output_json + "> ...")    
     utils.write_json(output_json, json_changes)

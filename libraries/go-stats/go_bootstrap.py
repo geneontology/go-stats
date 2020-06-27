@@ -61,6 +61,7 @@ def main(argv):
     # actual names of the files to be generated - can change here if needed
     output_stats =  output_rep + "go-stats.json"
     output_stats_no_pb =  output_rep + "go-stats-no-pb.json"
+    output_references = output_rep + "go-references.tsv"
     output_pmids = output_rep + "go-pmids.tsv"
     output_pubmed_pmids = output_rep + "GO.uid"
     output_ontology_changes = output_rep + "go-ontology-changes.json"
@@ -199,15 +200,16 @@ def main(argv):
     utils.write_json(output_stats_summary, json_stats_summary)
 
 
-    print("Saving PMID file to <" + output_pmids + "> and PubMed PMID file to <" + output_pubmed_pmids + ">")
+    print("Saving references file to <" + output_pmids + "> and PubMed PMID file to <" + output_pubmed_pmids + ">")
     references = go_stats.get_references()
-    pmids = {k:v for k,v in references.items() if "PMID:" in k}
-    pmids_ids = map(lambda x : x.split(":")[1], pmids)
+    references_lines = []
+    for k,v in references.items():
+        references_lines.append(k + "\t" + str(v))
 
-    pmids_lines = []
-    for k,v in pmids.items():
-        pmids_lines.append(k + "\t" + str(v))
+    pmids_lines = list(filter(lambda x: "PMID:" in x, references_lines))
+    pmids_ids = list(map(lambda x: x.split("\t")[0].split(":")[1], pmids_lines))
 
+    utils.write_text(output_references, "\n".join(references_lines))
     utils.write_text(output_pmids, "\n".join(pmids_lines))
     utils.write_text(output_pubmed_pmids, "\n".join(pmids_ids))
     print("Done.")

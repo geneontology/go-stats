@@ -160,9 +160,15 @@ def sum_map_values(map):
 
 def write_json(key, content):
     with open(key, 'w') as outfile:
-        json.dump(content, outfile, indent=2)
+        try:
+            json.dump(content, outfile, indent=2)
+        finally:
+            outfile.close()
  
 def write_text(key, content):
     with open(key, 'w') as outfile:
-        outfile.write(content)
+        try:
+            outfile.write(content)
+        finally:
+            outfile.close()
 

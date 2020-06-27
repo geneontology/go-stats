@@ -670,6 +670,7 @@ def main(argv):
     output_stats_no_pb =  output_rep + "go-stats-no-pb.json"
     output_stats_tsv =  output_rep + "go-stats.tsv"
     output_stats_no_pb_tsv =  output_rep + "go-stats-no-pb.tsv"
+    output_references = output_rep + "go-references.tsv"
     output_pmids = output_rep + "go-pmids.tsv"
     output_pubmed_pmids = output_rep + "GO.uid"
 
