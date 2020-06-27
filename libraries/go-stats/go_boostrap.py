@@ -58,6 +58,16 @@ def main(argv):
         os.mkdir(output_rep)
 
 
+    # actual names of the files to be generated - can change here if needed
+    output_stats =  output_rep + "go-stats.json"
+    output_stats_no_pb =  output_rep + "go-stats-no-pb.json"
+    output_pmids = output_rep + "go-pmids.tsv"
+    output_pubmed_pmids = output_rep + "GO.uid"
+    output_ontology_changes = output_rep + "go-ontology-changes.json"
+    output_ontology_changes_tsv = output_rep + "go-ontology-changes.tsv"
+    output_stats_summary = output_rep + "go-stats-summary.json"
+
+
     # 1 - Executing go_stats script
     print("\n\n1a - EXECUTING GO_STATS SCRIPT (INCLUDING PROTEIN BINDING)...\n")
     json_stats = go_stats.compute_stats(golr_url, release_date)    
@@ -71,10 +81,10 @@ def main(argv):
     # 2 - Executing go_ontology_changes script
     print("\n\n2 - EXECUTING GO_ONTOLOGY_CHANGES SCRIPT...\n")
     json_onto_changes = go_ontology_changes.compute_changes(current_obo_url, previous_obo_url)
-    utils.write_json(output_rep + "go-ontology-changes.json", json_onto_changes)
+    utils.write_json(output_ontology_changes, json_onto_changes)
 
     tsv_onto_changes = go_ontology_changes.create_text_report(json_onto_changes) 
-    utils.write_text(output_rep + "go-ontology-changes.tsv", tsv_onto_changes)
+    utils.write_text(output_ontology_changes_tsv, tsv_onto_changes)
     print("DONE.")
 
 
@@ -99,7 +109,7 @@ def main(argv):
         "bioentities" : json_stats["bioentities"],
         "references" : json_stats["references"]
     }
-    utils.write_json(output_rep + "go-stats.json", json_stats)
+    utils.write_json(output_stats, json_stats)
 
 
     json_stats_no_pb = {
@@ -110,7 +120,7 @@ def main(argv):
         "bioentities" : json_stats_no_pb["bioentities"],
         "references" : json_stats_no_pb["references"]
     }
-    utils.write_json(output_rep + "go-stats-no-pb.json", json_stats_no_pb)
+    utils.write_json(output_stats_no_pb, json_stats_no_pb)
 
 
     annotations_by_reference_genome = json_stats["annotations"]["by_model_organism"]
@@ -186,7 +196,22 @@ def main(argv):
     # removing by_reference_genome.by_evidence
     for gen in json_stats_summary["annotations"]["by_model_organism"]:
         del json_stats_summary["annotations"]["by_model_organism"][gen]["by_evidence"]
-    utils.write_json(output_rep + "go-stats-summary.json", json_stats_summary)
+    utils.write_json(output_stats_summary, json_stats_summary)
+
+
+    print("Saving PMID file to <" + output_pmids + "> and PubMed PMID file to <" + output_pubmed_pmids + ">")
+    references = go_stats.get_references()
+    pmids = {k:v for k,v in references.items() if "PMID:" in k}
+    pmids_ids = map(lambda x : x.split(":")[1], pmids)
+
+    pmids_lines = []
+    for k,v in pmids.items():
+        pmids_lines.append(k + "\t" + str(v))
+
+    utils.write_text(output_pmids, "\n".join(pmids_lines))
+    utils.write_text(output_pubmed_pmids, "\n".join(pmids_ids))
+    print("Done.")
+
 
     print("SUCCESS.")
 

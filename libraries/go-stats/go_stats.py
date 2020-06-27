@@ -662,36 +662,39 @@ def main(argv):
     if not os.path.exists(output_rep):
         os.mkdir(output_rep)
 
+
+    # actual names of the files to be generated - can change here if needed
     output_meta = output_rep + "go-meta.json"
     output_meta_no_pb = output_rep + "go-meta-no-pb.json"
-    output_json =  output_rep + "go-stats.json"
-    output_no_pb_json =  output_rep + "go-stats-no-pb.json"
-    output_tsv =  output_rep + "go-stats.tsv"
-    output_no_pb_tsv =  output_rep + "go-stats-no-pb.tsv"
-    output_references = output_rep + "go-pmids.json"
+    output_stats =  output_rep + "go-stats.json"
+    output_stats_no_pb =  output_rep + "go-stats-no-pb.json"
+    output_stats_tsv =  output_rep + "go-stats.tsv"
+    output_stats_no_pb_tsv =  output_rep + "go-stats-no-pb.tsv"
+    output_pmids = output_rep + "go-pmids.tsv"
+    output_pubmed_pmids = output_rep + "GO.uid"
 
 
-    print("Will write stats to " + output_json + " and " + output_tsv)
+    print("Will write stats to " + output_stats + " and " + output_stats_tsv)
     json_stats = compute_stats(golr_url, release_date, False)
-    print("Saving Stats to <" + output_json + "> ...")    
-    utils.write_json(output_json, json_stats)
+    print("Saving Stats to <" + output_stats + "> ...")    
+    utils.write_json(output_stats, json_stats)
     print("Done.")
 
-    print("Saving Stats to <" + output_tsv + "> ...")    
+    print("Saving Stats to <" + output_stats_tsv + "> ...")    
     tsv_stats = create_text_report(json_stats)
-    utils.write_text(output_tsv, tsv_stats)
+    utils.write_text(output_stats_tsv, tsv_stats)
     print("Done.")
 
 
-    print("Will write stats (excluding protein binding) to " + output_no_pb_json + " and " + output_no_pb_tsv)
+    print("Will write stats (excluding protein binding) to " + output_stats_no_pb + " and " + output_stats_no_pb_tsv)
     json_stats_no_pb = compute_stats(golr_url, release_date, True)
-    print("Saving Stats to <" + output_no_pb_json + "> ...")    
-    utils.write_json(output_no_pb_json, json_stats_no_pb)
+    print("Saving Stats to <" + output_stats_no_pb + "> ...")    
+    utils.write_json(output_stats_no_pb, json_stats_no_pb)
     print("Done.")
 
-    print("Saving Stats (excluding protein binding) to <" + output_no_pb_tsv + "> ...")    
+    print("Saving Stats (excluding protein binding) to <" + output_stats_no_pb_tsv + "> ...")    
     tsv_stats_no_pb = create_text_report(json_stats_no_pb)
-    utils.write_text(output_no_pb_tsv, tsv_stats_no_pb)
+    utils.write_text(output_stats_no_pb_tsv, tsv_stats_no_pb)
     print("Done.")
 
 
@@ -706,9 +709,21 @@ def main(argv):
     utils.write_json(output_meta_no_pb, json_meta_no_pb)
     print("Done.")
 
-    references = get_references()
-    utils.write_json(output_references, references)
 
+    print("Saving PMID file to <" + output_pmids + "> and PubMed PMID file to <" + output_pubmed_pmids + ">")
+    references = get_references()
+    pmids = {k:v for k,v in references.items() if "PMID:" in k}
+    pmids_ids = map(lambda x : x.split(":")[1], pmids)
+
+    pmids_lines = []
+    for k,v in pmids.items():
+        pmids_lines.append(k + "\t" + str(v))
+
+    utils.write_text(output_pmids, "\n".join(pmids_lines))
+    utils.write_text(output_pubmed_pmids, "\n".join(pmids_ids))
+    print("Done.")
+
+    
 
 
 

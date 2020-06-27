@@ -64,35 +64,51 @@ def main(argv):
         os.mkdir(output_rep)
 
 
+    # actual names of the files to be generated - can change here if needed
+    output_stats =  output_rep + "go-stats.json"
+    output_stats_no_pb =  output_rep + "go-stats-no-pb.json"
+    output_pmids = output_rep + "go-pmids.tsv"
+    output_pubmed_pmids = output_rep + "GO.uid"
+    output_ontology_changes = output_rep + "go-ontology-changes.json"
+    output_ontology_changes_tsv = output_rep + "go-ontology-changes.tsv"
+    output_stats_summary = output_rep + "go-stats-summary.json"
+    output_annotation_changes = output_rep + "go-annotation-changes.json"
+    output_annotation_changes_tsv = output_rep + "go-annotation-changes.tsv"
+    output_annotation_changes_no_pb = output_rep + "go-annotation-changes_no_pb.json"
+    output_annotation_changes_no_pb_tsv = output_rep + "go-annotation-changes_no_pb.tsv"
+
+
     # 1 - Executing go_stats script
     print("\n\n1a - EXECUTING GO_STATS SCRIPT (INCLUDING PROTEIN BINDING)...\n")
     json_stats = go_stats.compute_stats(golr_url, release_date)
-    # with open('newstats/2019-06/go-stats.json', 'r') as myfile:
-    #     data=myfile.read()
-    # json_stats = json.loads(data)
-    
     print("DONE.")
 
     print("\n\n1b - EXECUTING GO_STATS SCRIPT (EXCLUDING PROTEIN BINDING)...\n")
     json_stats_no_pb = go_stats.compute_stats(golr_url, release_date, True)
-    # with open('newstats/2019-06/go-stats-no-pb.json', 'r') as myfile:
-    #     data=myfile.read()
-    # json_stats_no_pb = json.loads(data)
-    # print("DONE.")
     print("DONE.")
+
+    print("\n\n1c - EXECUTING GO_STATS SCRIPT (CREATE PMIDs List)...\n")
+    references = go_stats.get_references()
+    pmids = {k:v for k,v in references.items() if "PMID:" in k}
+    pmids_ids = map(lambda x : x.split(":")[1], pmids)
+
+    pmids_lines = []
+    for k,v in pmids.items():
+        pmids_lines.append(k + "\t" + str(v))
+
+    print("Saving PMID file to <" + output_pmids + "> and PubMed PMID file to <" + output_pubmed_pmids + ">")
+    utils.write_text(output_pmids, "\n".join(pmids_lines))
+    utils.write_text(output_pubmed_pmids, "\n".join(pmids_ids))
+    print("DONE.")    
 
 
     # 2 - Executing go_ontology_changes script
     print("\n\n2 - EXECUTING GO_ONTOLOGY_CHANGES SCRIPT...\n")
     json_onto_changes = go_ontology_changes.compute_changes(current_obo_url, previous_obo_url)
-    utils.write_json(output_rep + "go-ontology-changes.json", json_onto_changes)
+    utils.write_json(output_ontology_changes, json_onto_changes)
 
     tsv_onto_changes = go_ontology_changes.create_text_report(json_onto_changes) 
-    utils.write_text(output_rep + "go-ontology-changes.tsv", tsv_onto_changes)
-
-    # with open('newstats/2019-06/go-ontology-changes.json', 'r') as myfile:
-    #     data=myfile.read()
-    # json_onto_changes = json.loads(data)
+    utils.write_text(output_ontology_changes_tsv, tsv_onto_changes)
     print("DONE.")
 
 
@@ -133,7 +149,7 @@ def main(argv):
         "bioentities" : json_stats["bioentities"],
         "references" : json_stats["references"]
     }
-    utils.write_json(output_rep + "go-stats.json", json_stats)
+    utils.write_json(output_stats, json_stats)
 
 
     json_stats_no_pb = {
@@ -144,7 +160,7 @@ def main(argv):
         "bioentities" : json_stats_no_pb["bioentities"],
         "references" : json_stats_no_pb["references"]
     }
-    utils.write_json(output_rep + "go-stats-no-pb.json", json_stats_no_pb)
+    utils.write_json(output_stats_no_pb, json_stats_no_pb)
 
 
     annotations_by_reference_genome = json_stats["annotations"]["by_model_organism"]
@@ -217,23 +233,26 @@ def main(argv):
         },
     }
 
+
     # removing by_reference_genome.by_evidence
     for gen in json_stats_summary["annotations"]["by_model_organism"]:
         del json_stats_summary["annotations"]["by_model_organism"][gen]["by_evidence"]
-    utils.write_json(output_rep + "go-stats-summary.json", json_stats_summary)
+    utils.write_json(output_stats_summary, json_stats_summary)
+
 
     # This is to modify the structure of the annotation changes based on recent requests
     json_annot_changes = go_annotation_changes.alter_annotation_changes(json_stats, previous_stats, json_annot_changes)
-    utils.write_json(output_rep + "go-annotation-changes.json", json_annot_changes)
+    utils.write_json(output_annotation_changes, json_annot_changes)
     tsv_annot_changes = go_annotation_changes.create_text_report(json_annot_changes)
-    utils.write_text(output_rep + "go-annotation-changes.tsv", tsv_annot_changes)
+    utils.write_text(output_annotation_changes_tsv, tsv_annot_changes)
 
     json_annot_no_pb_changes = go_annotation_changes.alter_annotation_changes(json_stats_no_pb, previous_stats_no_pb, json_annot_no_pb_changes)
-    utils.write_json(output_rep + "go-annotation-changes_no_pb.json", json_annot_no_pb_changes)
+    utils.write_json(output_annotation_changes_no_pb, json_annot_no_pb_changes)
     tsv_annot_changes_no_pb = go_annotation_changes.create_text_report(json_annot_no_pb_changes)
-    utils.write_text(output_rep + "go-annotation-changes_no_pb.tsv", tsv_annot_changes_no_pb)
+    utils.write_text(output_annotation_changes_no_pb_tsv, tsv_annot_changes_no_pb)
 
 
+    # Indicate all processes finished
     print("SUCCESS.")
 
 
