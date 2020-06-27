@@ -90,7 +90,7 @@ def main(argv):
 
 
     # 3 - Refining go-stats with ontology stats
-    print("\n\n4 - EXECUTING GO_REFINE_STATS SCRIPT...\n")
+    print("\n\n3 - EXECUTING GO_REFINE_STATS SCRIPT...\n")
     ontology = json_onto_changes["summary"]["current"].copy()
     del ontology["release_date"]
     ontology["changes_created_terms"] = json_onto_changes["summary"]["changes"]["created_terms"]
