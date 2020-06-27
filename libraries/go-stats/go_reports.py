@@ -1,3 +1,6 @@
+# This script is the one to launch at every release to compute the full set of stats and changes between this and the previous release
+# The script can also be used to compute the changes between any two releases by selecting older go-stats and OBO files
+
 import requests
 import json
 import sys, getopt, os

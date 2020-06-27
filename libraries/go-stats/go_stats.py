@@ -668,6 +668,7 @@ def main(argv):
     output_no_pb_json =  output_rep + "go-stats-no-pb.json"
     output_tsv =  output_rep + "go-stats.tsv"
     output_no_pb_tsv =  output_rep + "go-stats-no-pb.tsv"
+    output_references = output_rep + "go-pmids.json"
 
 
     print("Will write stats to " + output_json + " and " + output_tsv)
@@ -704,7 +705,10 @@ def main(argv):
     print("Saving META to <" + output_meta_no_pb + "> ...")    
     utils.write_json(output_meta_no_pb, json_meta_no_pb)
     print("Done.")
-    
+
+    references = get_references()
+    utils.write_json(output_references, references)
+
 
 
 
