@@ -21,7 +21,7 @@ def main(argv):
     release_date = ''
 
     print(len(argv))
-    if len(argv) < 14:
+    if len(argv) < 10:
         print_help()
         sys.exit(2)
 
