@@ -10,13 +10,11 @@ import go_stats_utils as utils
 
 
 def print_help():
-    print('\nUsage: python go_reports.py -g <current_golr_url> -d <release_date> -s <previous_stats_url> -n <previous_stats_no_pb_url> -c <current_obo_url> -p <previous_obo_url> -o <output_rep>\n')
+    print('\nUsage: python go_bootstrap.py -g <current_golr_url> -d <release_date> -c <current_obo_url> -p <previous_obo_url> -o <output_rep>\n')
 
 
 def main(argv):
     golr_url = ''
-    previous_stats_url = ''
-    previous_stats_no_pb_url = ''
     current_obo_url = ''
     previous_obo_url = ''    
     output_rep = ''
@@ -28,7 +26,7 @@ def main(argv):
         sys.exit(2)
 
     try:
-        opts, argv = getopt.getopt(argv,"g:s:n:c:p:o:d:",["golrurl=", "pstats=", "pnstats=", "cobo=", "pobo=", "orep=", "date="])
+        opts, argv = getopt.getopt(argv,"g:c:p:o:d:",["golrurl=", "cobo=", "pobo=", "orep=", "date="])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -41,10 +39,6 @@ def main(argv):
             golr_url = arg
             if not golr_url.endswith("/"):
                 golr_url = golr_url + "/"
-        elif opt in ("-s", "--pstats"):
-            previous_stats_url = arg
-        elif opt in ("-n", "--pnstats"):
-            previous_stats_no_pb_url = arg
         elif opt in ("-c", "--cobo"):
             current_obo_url = arg
         elif opt in ("-p", "--pobo"):
@@ -63,19 +57,11 @@ def main(argv):
 
     # 1 - Executing go_stats script
     print("\n\n1a - EXECUTING GO_STATS SCRIPT (INCLUDING PROTEIN BINDING)...\n")
-    json_stats = go_stats.compute_stats(golr_url, release_date)
-    # with open('newstats/2019-06/go-stats.json', 'r') as myfile:
-    #     data=myfile.read()
-    # json_stats = json.loads(data)
-    
+    json_stats = go_stats.compute_stats(golr_url, release_date)    
     print("DONE.")
 
     print("\n\n1b - EXECUTING GO_STATS SCRIPT (EXCLUDING PROTEIN BINDING)...\n")
     json_stats_no_pb = go_stats.compute_stats(golr_url, release_date, True)
-    # with open('newstats/2019-06/go-stats-no-pb.json', 'r') as myfile:
-    #     data=myfile.read()
-    # json_stats_no_pb = json.loads(data)
-    # print("DONE.")
     print("DONE.")
 
 
@@ -86,31 +72,11 @@ def main(argv):
 
     tsv_onto_changes = go_ontology_changes.create_text_report(json_onto_changes) 
     utils.write_text(output_rep + "go-ontology-changes.tsv", tsv_onto_changes)
-
-    # with open('newstats/2019-06/go-ontology-changes.json', 'r') as myfile:
-    #     data=myfile.read()
-    # json_onto_changes = json.loads(data)
     print("DONE.")
 
 
-    # 3 - Executing go_annotation_changes script
-    print("\n\n3a - EXECUTING GO_ANNOTATION_CHANGES SCRIPT (INCLUDING PROTEIN BINDING)...\n")
-    previous_stats = requests.get(previous_stats_url).json()    
-    json_annot_changes = go_annotation_changes.compute_changes(json_stats, previous_stats)
-    print("DONE.")
-    
-    print("\n\n3b - EXECUTING GO_ANNOTATION_CHANGES SCRIPT (EXCLUDING PROTEIN BINDING)...\n")
-    previous_stats_no_pb = requests.get(previous_stats_no_pb_url).json()    # WE STILL NEED TO CORRECT THAT: 1 FILE OR SEVERAL FILE ? IF SEVERAL, ONE MORE PARAMETER
-    json_annot_no_pb_changes = go_annotation_changes.compute_changes(json_stats_no_pb, previous_stats_no_pb)
-    print("DONE.")
-
-
-    # 4 - Refining go-stats with ontology stats
+    # 3 - Refining go-stats with ontology stats
     print("\n\n4 - EXECUTING GO_REFINE_STATS SCRIPT...\n")
-    merged_annotations_diff = utils.merge_dict(json_stats, json_annot_changes)
-    json_annot_changes = merged_annotations_diff
-
-
     ontology = json_onto_changes["summary"]["current"].copy()
     del ontology["release_date"]
     ontology["changes_created_terms"] = json_onto_changes["summary"]["changes"]["created_terms"]
@@ -218,18 +184,6 @@ def main(argv):
     for gen in json_stats_summary["annotations"]["by_model_organism"]:
         del json_stats_summary["annotations"]["by_model_organism"][gen]["by_evidence"]
     utils.write_json(output_rep + "go-stats-summary.json", json_stats_summary)
-
-    # This is to modify the structure of the annotation changes based on recent requests
-    json_annot_changes = go_annotation_changes.alter_annotation_changes(json_stats, previous_stats, json_annot_changes)
-    utils.write_json(output_rep + "go-annotation-changes.json", json_annot_changes)
-    tsv_annot_changes = go_annotation_changes.create_text_report(json_annot_changes)
-    utils.write_text(output_rep + "go-annotation-changes.tsv", tsv_annot_changes)
-
-    json_annot_no_pb_changes = go_annotation_changes.alter_annotation_changes(json_stats_no_pb, previous_stats_no_pb, json_annot_no_pb_changes)
-    utils.write_json(output_rep + "go-annotation-changes_no_pb.json", json_annot_no_pb_changes)
-    tsv_annot_changes_no_pb = go_annotation_changes.create_text_report(json_annot_no_pb_changes)
-    utils.write_text(output_rep + "go-annotation-changes_no_pb.tsv", tsv_annot_changes_no_pb)
-
 
     print("SUCCESS.")
 
