@@ -382,17 +382,16 @@ def create_text_report(json_changes):
     for key, val in json_changes["detailed_changes"]["annotations"]["by_taxon"].items():
         text_report += "\n" + key + "\t" + str(val)
 
-    text_report += "\n\nADDED REFERENCES"
+    text_report += "\n\nADDED REFERENCES\n"
     text_report += "\n".join(json_changes["detailed_changes"]["references"]["all"]["added"])
 
-    text_report += "\n\REMOVED REFERENCES"
+    text_report += "\n\nREMOVED REFERENCES\n"
     text_report += "\n".join(json_changes["detailed_changes"]["references"]["all"]["removed"])
 
-
-    text_report += "\n\nADDED PMIDS"
+    text_report += "\n\nADDED PMIDS\n"
     text_report += "\n".join(json_changes["detailed_changes"]["references"]["pmids"]["added"])
 
-    text_report += "\n\REMOVED PMIDS"
+    text_report += "\n\nREMOVED PMIDS\n"
     text_report += "\n".join(json_changes["detailed_changes"]["references"]["pmids"]["removed"])
 
     return text_report
