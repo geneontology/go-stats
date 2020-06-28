@@ -5,3 +5,8 @@ libraries/go-stats/reports/
 libraries/go-stats/.vscode/
 libraries/go-stats/*-info/
 libraries/go-stats/stats/
+libraries/go-stats/__pycache__/
+
+*.pyc
+
+.DS_Store
