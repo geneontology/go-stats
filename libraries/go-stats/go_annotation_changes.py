@@ -386,14 +386,14 @@ def create_text_report(json_changes):
     text_report += "\n".join(json_changes["detailed_changes"]["references"]["all"]["added"])
 
     text_report += "\n\REMOVED REFERENCES"
-    text_report += "\n".join(json_changes["detailed_changes"]["references"]["removed"]["added"])
+    text_report += "\n".join(json_changes["detailed_changes"]["references"]["all"]["removed"])
 
 
     text_report += "\n\nADDED PMIDS"
     text_report += "\n".join(json_changes["detailed_changes"]["references"]["pmids"]["added"])
 
     text_report += "\n\REMOVED PMIDS"
-    text_report += "\n".join(json_changes["detailed_changes"]["references"]["pmids"]["added"])
+    text_report += "\n".join(json_changes["detailed_changes"]["references"]["pmids"]["removed"])
 
     return text_report
 
