@@ -93,14 +93,17 @@ def main(argv):
 
     print("\n\n1c - EXECUTING GO_STATS SCRIPT (RETRIEVING PREVIOUS REFERENCES LIST)...\n")
     previous_references_ids = requests.get(previous_references_url).text
+    previous_references_ids = previous_references_ids.split("\n")
+    previous_references_ids = list(map(lambda x: x.split("\t")[0], previous_references_ids))
+    print("DONE.")
 
     print("\n\n1d - EXECUTING GO_STATS SCRIPT (CREATING CURRENT REFERENCES LIST)...\n")
     references = go_stats.get_references()
     references_lines = []
     for k,v in references.items():
         references_lines.append(k + "\t" + str(v))
+    current_references_ids = list(map(lambda x: x.split("\t")[0], references_lines))
 
-    current_references_ids = list(map(lambda x: x.split("\t")[0].split(":")[1], references_lines))
     pmids_lines = list(filter(lambda x: "PMID:" in x, references_lines))
     pmids_ids = list(map(lambda x: x.split("\t")[0].split(":")[1], pmids_lines))
 
@@ -157,8 +160,9 @@ def main(argv):
         "bioentities" : json_stats["bioentities"],
         "references" : json_stats["references"]
     }
-    print("\n\n4a - SAVING GO-STATS...\n")
+    print("\n4a - SAVING GO-STATS...\n")
     utils.write_json(output_stats, json_stats)
+    print("DONE.")
 
 
     json_stats_no_pb = {
@@ -169,8 +173,9 @@ def main(argv):
         "bioentities" : json_stats_no_pb["bioentities"],
         "references" : json_stats_no_pb["references"]
     }
-    print("\n\n4b - SAVING GO-STATS-NO-PB...\n")
+    print("\n4b - SAVING GO-STATS-NO-PB...\n")
     utils.write_json(output_stats_no_pb, json_stats_no_pb)
+    print("DONE.")
 
 
     annotations_by_reference_genome = json_stats["annotations"]["by_model_organism"]
@@ -214,6 +219,7 @@ def main(argv):
             },
             "by_bioentity_type_cluster" : json_stats["annotations"]["by_bioentity_type"]["cluster"],
             "by_bioentity_type_cluster_no_pb" : json_stats_no_pb["annotations"]["by_bioentity_type"]["cluster"],
+            "by_qualifier" : json_stats["annotations"]["by_qualifier"],
             "by_evidence_cluster" : json_stats["annotations"]["by_evidence"]["cluster"],
             "by_evidence_cluster_no_pb" : json_stats_no_pb["annotations"]["by_evidence"]["cluster"],
             "by_model_organism" : annotations_by_reference_genome
@@ -247,22 +253,26 @@ def main(argv):
     # removing by_reference_genome.by_evidence
     for gen in json_stats_summary["annotations"]["by_model_organism"]:
         del json_stats_summary["annotations"]["by_model_organism"][gen]["by_evidence"]
-    print("\n\n4c - SAVING GO-STATS-SUMMARY...\n")
+    print("\n4c - SAVING GO-STATS-SUMMARY...\n")
     utils.write_json(output_stats_summary, json_stats_summary)
+    print("DONE.")
 
 
     # This is to modify the structure of the annotation changes based on recent requests
-    print("\n\n4d - SAVING GO-ANNOTATION-CHANGES...\n")
+    print("\n4d - SAVING GO-ANNOTATION-CHANGES...\n")
     json_annot_changes = go_annotation_changes.alter_annotation_changes(json_stats, previous_stats, current_references_ids, previous_references_ids, json_annot_changes)
     utils.write_json(output_annotation_changes, json_annot_changes)
     tsv_annot_changes = go_annotation_changes.create_text_report(json_annot_changes)
     utils.write_text(output_annotation_changes_tsv, tsv_annot_changes)
+    print("DONE.")
 
-    print("\n\n4e - SAVING GO-ANNOTATION-NO-PB-CHANGES...\n")
+
+    print("\n4e - SAVING GO-ANNOTATION-NO-PB-CHANGES...\n")
     json_annot_no_pb_changes = go_annotation_changes.alter_annotation_changes(json_stats_no_pb, previous_stats_no_pb, current_references_ids, previous_references_ids, json_annot_no_pb_changes)
     utils.write_json(output_annotation_changes_no_pb, json_annot_no_pb_changes)
     tsv_annot_changes_no_pb = go_annotation_changes.create_text_report(json_annot_no_pb_changes)
     utils.write_text(output_annotation_changes_no_pb_tsv, tsv_annot_changes_no_pb)
+    print("DONE.")
 
 
     # Indicate all processes finished

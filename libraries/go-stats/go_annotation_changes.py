@@ -140,13 +140,27 @@ def alter_annotation_changes(current_stats, previous_stats, current_references, 
         }
     }
 
+    altered_json_annot_changes["detailed_changes"]["references"]["all"]["added"] = []
+    altered_json_annot_changes["detailed_changes"]["references"]["all"]["removed"] = []
+    altered_json_annot_changes["detailed_changes"]["references"]["pmids"]["added"] = []
+    altered_json_annot_changes["detailed_changes"]["references"]["pmids"]["removed"] = []
+
     # if pmid lists are provided, add the information to the stats
     if current_references and previous_references:
-        added_references = list(filter(lambda x: x not in previous_references, current_references))
-        removed_references = list(filter(lambda x: x not in current_references, previous_references))
+        # creating sets to accelerate the diff
+        set_cur = set(current_references)
+        set_prev = set(previous_references)
+
+        added_references = list(filter(lambda x: x not in set_prev, set_cur))
+        removed_references = list(filter(lambda x: x not in set_cur, set_prev))
 
         added_pmids = list(filter(lambda x: "PMID:" in x, added_references))
         removed_pmids = list(filter(lambda x: "PMID:" in x, removed_references))
+
+        print("added references:   \t", len(added_references))
+        print("removed references: \t", len(removed_references))
+        print("added pmids:        \t", len(added_pmids))
+        print("removed pmids:      \t", len(removed_pmids))
 
         altered_json_annot_changes["summary"]["changes"]["references"]["added"] = len(added_references)
         altered_json_annot_changes["summary"]["changes"]["references"]["removed"] = len(removed_references)
@@ -154,8 +168,11 @@ def alter_annotation_changes(current_stats, previous_stats, current_references, 
         altered_json_annot_changes["summary"]["changes"]["pmids"]["added"] = len(added_pmids)
         altered_json_annot_changes["summary"]["changes"]["pmids"]["removed"] = len(removed_pmids)
 
-        altered_json_annot_changes["detailed_changes"]["references"]
+        altered_json_annot_changes["detailed_changes"]["references"]["all"]["added"] = added_references
+        altered_json_annot_changes["detailed_changes"]["references"]["all"]["removed"] = removed_references
 
+        altered_json_annot_changes["detailed_changes"]["references"]["pmids"]["added"] = added_pmids
+        altered_json_annot_changes["detailed_changes"]["references"]["pmids"]["removed"] = removed_pmids
 
     return altered_json_annot_changes  
 
@@ -365,6 +382,18 @@ def create_text_report(json_changes):
     for key, val in json_changes["detailed_changes"]["annotations"]["by_taxon"].items():
         text_report += "\n" + key + "\t" + str(val)
 
+    text_report += "\n\nADDED REFERENCES"
+    text_report += "\n".join(json_changes["detailed_changes"]["references"]["all"]["added"])
+
+    text_report += "\n\REMOVED REFERENCES"
+    text_report += "\n".join(json_changes["detailed_changes"]["references"]["removed"]["added"])
+
+
+    text_report += "\n\nADDED PMIDS"
+    text_report += "\n".join(json_changes["detailed_changes"]["references"]["pmids"]["added"])
+
+    text_report += "\n\REMOVED PMIDS"
+    text_report += "\n".join(json_changes["detailed_changes"]["references"]["pmids"]["added"])
 
     return text_report
 

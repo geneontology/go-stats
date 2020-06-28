@@ -8,15 +8,20 @@ Example: [http://current.geneontology.org/release_stats/index.html](http://curre
 This update affects statistics files starting July 2020.
 
 ### go-stats, go-stats-no-pb and go-stats-summary
-* added annotations.total_pb : the number of annotations to protein binding term
+* added annotations.total_pb : the number of annotations to protein binding term (only in go-stats-summary as requiring both go-stats and go-stats-no-pb)
 * annotations.by_qualifier : the number of annotations by qualifier (eg contributes_to, colocalizes_with, not)
 * annotations.by_model_organism.{taxon}.by_qualifier: the number of annotations by qualifier for the given taxon
 
 ### List of PMID for each release
-* file go-pmids.tsv with PMID | Nb annotations
-* file GO.ui with only PMID without prefixes (used to update PubMed references to GO)
+* go-references.tsv : table of REFERENCES | Nb annotations
+* go-pmids.tsv : table of PMID | Nb annotations
+* GO.ui : table containing only PMIDs without their prefixes (used to update PubMed references to GO)
 
 ### go-annotation-changes
+* summary.changes.pmids.added/removed : show the number of pmids added / removed (in previous releases, those values were set to 0)
+* detailed_changes.references.all.added : detail the list of references newly annotated (they were not used in previous release)
+* detailed_changes.references.all.removed : detail the list of references present in the previous release but not in the new/current release
+* detailed_changes.references.pmids.added : detail the list of publications newly annotated (were not used in previous release)
+* detailed_changes.references.pmids.removed : detail the list of publications present in the previous release but not present in the new/current release
 
-
-
+Note: go-annotation-changes.tsv should also reflect those changes that primarily occurs in go-annotation-changes.json
