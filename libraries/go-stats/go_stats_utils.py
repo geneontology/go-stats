@@ -63,6 +63,15 @@ def golr_fetch(golr_base_url, select_query):
 def golr_fetch_by_taxon(golr_base_url, select_query, taxon):
     return golr_fetch(golr_base_url, select_query + "&fq=taxon:\"" + taxon + "\"")
 
+def golr_fetch_by_taxa(golr_base_url, select_query, taxa):
+    tmp = ""
+    if isinstance(taxa, list):
+        tmp = "&fq=taxon:(\"" + taxa.join("\" ") + "\")"
+    else:
+        tmp = "&fq=taxon:\"" + taxa + "\""
+    print("*** ", golr_base_url + select_query + tmp)
+    return golr_fetch(golr_base_url, select_query + tmp)
+
 # utility function to build a list from a solr/golr facet array
 def build_list(items_list, min_size = None):
     ls = []
