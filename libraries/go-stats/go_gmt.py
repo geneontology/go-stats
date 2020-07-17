@@ -66,8 +66,8 @@ def gmt(golr_base_url, taxon):
             report_direct["ALL"] += "\t" + format_id(annot['bioentity'])
             report_direct[term_aspect] += "\t" + format_id(annot['bioentity'])
 
-        report_direct["ALL"] + "\n"
-        report_direct[term_aspect] + "\n"
+        report_direct["ALL"] += "\n"
+        report_direct[term_aspect] += "\n"
         count += 1
 
         if count % 100 == 0:
@@ -123,11 +123,11 @@ def main(argv):
     data = gmt(golr_base_url, taxon)
 
     output = output_rep + taxon_id
-    utils.write_text(output + "-" + taxon_id + "-all.gmt", data["ALL"])
-    utils.write_text(output + "-" + taxon_id + "-bp.gmt", data["BP"])
-    utils.write_text(output + "-" + taxon_id + "-mf.gmt", data["MF"])
-    utils.write_text(output + "-" + taxon_id + "-cc.gmt", data["CC"])
-    utils.write_text(output + "-" + taxon_id + "-unk.gmt", data["UNK"])
+    utils.write_text(output + "-all.gmt", data["ALL"])
+    utils.write_text(output + "-bp.gmt", data["BP"])
+    utils.write_text(output + "-mf.gmt", data["MF"])
+    utils.write_text(output + "-cc.gmt", data["CC"])
+    utils.write_text(output + "-unk.gmt", data["UNK"])
 
 
 if __name__ == "__main__":
