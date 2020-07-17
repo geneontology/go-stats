@@ -1,7 +1,7 @@
 import sys, getopt, os, json
 import go_stats_utils as utils
 
-max_rows = 50
+max_rows = 10000000
 
 select_ontology = "select?fq=document_category:\"ontology_class\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=idspace:\"GO\"&fq=is_obsolete:false&fl=annotation_class,annotation_class_label,source"
 
@@ -42,7 +42,7 @@ def aspect(source):
     return "UNK"
 
 
-def gmt(golr_base_url, taxon, output_base_file):
+def gmt(golr_base_url, taxon):
     ontology_map = create_ontology_map(golr_base_url)
     go_annotation_map = create_go_annotation_map(golr_base_url)
 
@@ -104,8 +104,18 @@ def main(argv):
     # ontology = create_ontology_map(golr_base_url)
     # print(ontology)
 
-    annots = create_go_annotation_map(golr_base_url)
-    print(annots)
+    # annots = create_go_annotation_map(golr_base_url)
+    # print(annots)
+    
+    taxon_id = taxon.split(":")[1]
+    data = gmt(golr_base_url, taxon)
+
+    output = output_rep + taxon_id
+    utils.write_text(output + "-" + taxon_id + "-all.gmt", data["ALL"])
+    utils.write_text(output + "-" + taxon_id + "-bp.gmt", data["BP"])
+    utils.write_text(output + "-" + taxon_id + "-mf.gmt", data["MF"])
+    utils.write_text(output + "-" + taxon_id + "-cc.gmt", data["CC"])
+
 
 if __name__ == "__main__":
    main(sys.argv[1:])
