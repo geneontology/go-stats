@@ -52,7 +52,7 @@ def gmt(golr_base_url, taxon):
     go_annotation_map = create_go_annotation_map(golr_base_url)
     print("Term annotation map created with ", len(go_annotation_map) , " terms")
 
-    report_direct = { "ALL" : "", "BP" : "", "MF" : "", "CC" : "" }
+    report_direct = { "ALL" : "", "BP" : "", "MF" : "", "CC" : "", "UNK" : "" }
     count = 0
 
     for term_id, value in go_annotation_map.items():  
@@ -127,6 +127,7 @@ def main(argv):
     utils.write_text(output + "-" + taxon_id + "-bp.gmt", data["BP"])
     utils.write_text(output + "-" + taxon_id + "-mf.gmt", data["MF"])
     utils.write_text(output + "-" + taxon_id + "-cc.gmt", data["CC"])
+    utils.write_text(output + "-" + taxon_id + "-unk.gmt", data["UNK"])
 
 
 if __name__ == "__main__":
