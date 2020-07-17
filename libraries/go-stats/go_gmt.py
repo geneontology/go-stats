@@ -5,7 +5,8 @@ max_rows = 10000000
 
 select_ontology = "select?fq=document_category:\"ontology_class\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=idspace:\"GO\"&fq=is_obsolete:false&fl=annotation_class,annotation_class_label,source"
 
-select_annotations = "select?fq=document_category:%22annotation%22&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=taxon:%22NCBITaxon:9606%22&fq=type:%22protein%22&fl=bioentity,aspect,annotation_class,evidence_type,isa_partof_closure,regulates_closure"
+select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=taxon:\"NCBITaxon:9606\"&fq=type:\"protein\"&fl=bioentity,aspect,annotation_class"
+# select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=taxon:\"NCBITaxon:9606\"&fq=type:\"protein\"&fl=bioentity,aspect,annotation_class,evidence_type,isa_partof_closure,regulates_closure"
 
 def create_ontology_map(golr_base_url):
     ontology = utils.golr_fetch(golr_base_url, select_ontology)
@@ -43,10 +44,17 @@ def aspect(source):
 
 
 def gmt(golr_base_url, taxon):
+    print("\nCreating ontology map...")
     ontology_map = create_ontology_map(golr_base_url)
+    print("Ontology map created with ", len(ontology_map) , " terms")
+
+    print("\nCreating term annotation map...")
     go_annotation_map = create_go_annotation_map(golr_base_url)
+    print("Term annotation map created with ", len(go_annotation_map) , " terms")
 
     report_direct = { "ALL" : "", "BP" : "", "MF" : "", "CC" : "" }
+    count = 0
+
     for term_id, value in go_annotation_map.items():  
         term_label = ontology_map[term_id]['annotation_class_label']
         term_aspect = aspect(ontology_map[term_id]['source'])
@@ -60,6 +68,10 @@ def gmt(golr_base_url, taxon):
 
         report_direct["ALL"] + "\n"
         report_direct[term_aspect] + "\n"
+        count += 1
+
+        if count % 100 == 0:
+            print(count + " terms map created...")
 
     return report_direct
 
