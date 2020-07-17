@@ -71,7 +71,7 @@ def gmt(golr_base_url, taxon):
         count += 1
 
         if count % 100 == 0:
-            print(count + " terms map created...")
+            print(str(count) + " terms map created...")
 
     return report_direct
 
