@@ -163,15 +163,27 @@ def main(argv):
 
     # taxa = utils.REFERENCE_GENOME_IDS
     taxa = [ "NCBITaxon:9606", "NCBITaxon:10116" ]
-    print("\n3 - Creating the GMTs for " , len(taxa) , " ")
+    print("\n3 - Creating the GMTs for " , len(taxa) , " taxa")
     for taxon in taxa:
         taxon_id = taxon.split(":")[1]
-        data = gmt(ontology_map, golr_base_url, taxon)
+        gmt_taxon = gmt(ontology_map, golr_base_url, taxon)
 
         output = output_rep + taxon_id
-        for aspect in data:
-            if len(data[aspect]) > 0:
-                utils.write_text(output + "-" + aspect.lower() + ".gmt", data[aspect])
+
+        for aspect in gmt_taxon:
+            if len(gmt_taxon[aspect]) > 0:
+                utils.write_text(output + "-" + aspect.lower() + ".gmt", gmt_taxon[aspect])
+
+        for slim_obo in slim_obos:
+            oterms = slim_obos[slim_obo].get_terms(TermState.VALID)
+            terms = list(map(lambda x: x.id, oterms))
+            gmt_taxon_slim = filter_slim(gmt_taxon, terms)
+            slim_key = slim_obo.replace(".obo", "")
+
+            for aspect in gmt_taxon_slim:
+                if len(gmt_taxon_slim[aspect]) > 0:
+                    utils.write_text(output + "-" + slim_key + "-" + aspect.lower() + ".gmt", gmt_taxon_slim[aspect])
+
 
 
 if __name__ == "__main__":
