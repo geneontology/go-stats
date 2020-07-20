@@ -34,12 +34,12 @@ CC_TERM_ID = "GO:0005575"
 
 # useful grouping of evidences as discussed with Pascale
 EVIDENCE_GROUPS = {
-    "EXP": ["EXP", "IDA", "IEP", "IGC", "IGI", "IMP", "IPI"],
+    "EXP": ["EXP", "IDA", "IEP", "IGI", "IMP", "IPI"],
     "HTP": ["HDA", "HEP", "HGI", "HMP", "HTP"],
     "PHYLO": ["IBA", "IRD", "IKR", "IMR"],
     "IEA": ["IEA"],
     "ND": ["ND"],
-    "OTHER": ["IC", "ISA", "ISM", "ISO", "ISS", "NAS", "RCA", "TAS"]
+    "OTHER": ["IC", "IGC", "ISA", "ISM", "ISO", "ISS", "NAS", "RCA", "TAS"]
 }
 
 EVIDENCE_MIN_GROUPS = {
