@@ -126,18 +126,23 @@ def gmt(ontology_map, golr_base_url, taxa):
                 continue
             
             if evgroup not in report["ALL"]:
-                report["ALL"][evgroup] = ""         
-            report["ALL"][evgroup] += term_label + "%" + term_aspect + "%" + term_id + "\t" + "\t".join(id_set) + "\n"
+                report["ALL"][evgroup] = []         
+            report["ALL"][evgroup].append(term_label + "%" + term_aspect + "%" + term_id + "\t" + "\t".join(id_set))
 
             if evgroup not in report[term_aspect]:
-                report[term_aspect][evgroup] = ""
-            report[term_aspect][evgroup] += term_label + "%" + term_aspect + "%" + term_id + "\t" + "\t".join(id_set) + "\n"
+                report[term_aspect][evgroup] = []
+            report[term_aspect][evgroup].append(term_label + "%" + term_aspect + "%" + term_id + "\t" + "\t".join(id_set))
 
         count += 1
 
         if count % 2000 == 0:
             print(str(count) + " terms map created...")
     print(str(count) + " terms map created...")
+
+    # Transforming to text
+    for aspect in report:
+        for evgroup in report[aspect]:
+            report[aspect][evgroup] = "\n".join(report[aspect][evgroup])
 
     return report
 

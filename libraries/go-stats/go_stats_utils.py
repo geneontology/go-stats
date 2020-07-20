@@ -9,8 +9,8 @@ ev_all = ['EXP', 'IDA', 'IMP', 'IGI',  'IPI', 'IEP', 'IGC', 'RCA', 'IBA', 'IKR',
 
 
 class CLOSURE_LABELS(Enum):
-   ISA = "isa_closure",
-   ISA_PARTOF = "isa_partof_closure",
+   ISA = "isa_closure"
+   ISA_PARTOF = "isa_partof_closure"
    REGULATES = "regulates_closure"
 
 # This is a hard coded list of reference genomes that should always be present in a GO release
