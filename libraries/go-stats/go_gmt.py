@@ -104,16 +104,19 @@ def gmt(ontology_map, golr_base_url, taxa):
 
         # going through each annotation for the term considered
         for annot in value:
-            # Add all annotations (don't filter by evidence)
-            id_sets["ALL"].add(format_id(annot['bioentity']))
-            
+            bioentity = annot['bioentity']
             et = annot['evidence_type']
+
+            # Don't annotate the gene to that term if ND !
             evgroup = utils.get_evidence_min_group(et)
             if(evgroup == "ND"):
                 continue
 
+            # Add all annotations (don't filter by evidence)
+            id_sets["ALL"].add(bioentity)
+
             # Add the annotation for the specific group of evidence
-            id_sets[evgroup].add(format_id(annot['bioentity']))
+            id_sets[evgroup].add(bioentity)
 
 
         # Building the report for that term; will add only the term to an evidence group report IF the term has at least one gene
@@ -123,7 +126,7 @@ def gmt(ontology_map, golr_base_url, taxa):
                 continue
             
             if evgroup not in report["ALL"]:
-                report["ALL"][evgroup] = ""                
+                report["ALL"][evgroup] = ""         
             report["ALL"][evgroup] += term_label + "%" + term_aspect + "%" + term_id + "\t" + "\t".join(id_set) + "\n"
 
             if evgroup not in report[term_aspect]:
