@@ -6,6 +6,44 @@ from urllib3.util.retry import Retry
 # This is a hard coded list of evidence, better organized for readability
 ev_all = ['EXP', 'IDA', 'IMP', 'IGI',  'IPI', 'IEP', 'IGC', 'RCA', 'IBA', 'IKR', 'IC', 'NAS', 'ND', 'TAS', 'HDA', 'HEP', 'HGI', 'HMP', 'ISA', 'ISM', 'ISO', 'ISS', 'IEA']
 
+# This is a hard coded list of reference genomes that should always be present in a GO release
+REFERENCE_GENOME_IDS = [
+    "NCBITaxon:9606",
+    "NCBITaxon:10116",
+    "NCBITaxon:10090",
+    "NCBITaxon:3702",
+    "NCBITaxon:7955",
+    "NCBITaxon:6239",
+    "NCBITaxon:559292",
+    "NCBITaxon:7227",
+    "NCBITaxon:44689",
+    "NCBITaxon:4896",
+    "NCBITaxon:83333"
+]
+
+BP_TERM_ID = "GO:0008150"
+MF_TERM_ID = "GO:0003674"
+CC_TERM_ID = "GO:0005575"
+
+# useful grouping of evidences as discussed with Pascale
+EVIDENCE_GROUPS = {
+    "EXP": ["EXP", "IDA", "IEP", "IGC", "IGI", "IMP", "IPI"],
+    "HTP": ["HDA", "HEP", "HGI", "HMP", "HTP"],
+    "PHYLO": ["IBA", "IRD", "IKR", "IMR"],
+    "IEA": ["IEA"],
+    "ND": ["ND"],
+    "OTHER": ["IC", "ISA", "ISM", "ISO", "ISS", "NAS", "RCA", "TAS"]
+}
+
+def aspect_from_source(source):
+    if source == "molecular_function":
+        return "MF"
+    elif source == "biological_process":
+        return "BP"
+    elif source == "cellular_component":
+        return "CC"
+    return "UNK"
+
 
 global_session = None
 
