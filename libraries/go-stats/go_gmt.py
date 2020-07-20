@@ -132,7 +132,7 @@ def gmt(ontology_map, golr_base_url, taxa):
 
         count += 1
 
-        if count % 5000 == 0:
+        if count % 2000 == 0:
             print(str(count) + " terms map created...")
     print(str(count) + " terms map created...")
 
