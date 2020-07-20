@@ -6,10 +6,12 @@ from obo_parser import OBO_Parser, TermState
 
 max_rows = 10000000
 
-select_ontology = "select?fq=document_category:\"ontology_class\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=idspace:\"GO\"&fq=is_obsolete:false&fl=annotation_class,annotation_class_label,source"
+
+
+select_ontology = "select?fq=document_category:\"ontology_class\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=idspace:\"GO\"&fq=is_obsolete:false&fl=annotation_class,annotation_class_label,source,regulates_closure,isa_closure,isa_partof_closure,regulates_closure"
 select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=type:\"protein\"&fl=bioentity,annotation_class,evidence_type"
 
-aspects = {
+ASPECTS = {
     "GO:0003674" : "MF",
     "GO:0008150" : "BP",
     "GO:0005575" : "CC"
@@ -25,6 +27,9 @@ def create_ontology_map(golr_base_url):
     return map
 
 def create_go_annotation_map(golr_base_url, taxa):
+    """
+    Create a Map { GO-Term -> [ annotations ] } using the direct annotation to the term (annotation_class)
+    """
     annots = utils.golr_fetch_by_taxa(golr_base_url, select_annotations, taxa)
     annots = annots['response']['docs']
     map={}
@@ -38,6 +43,26 @@ def create_go_annotation_map(golr_base_url, taxa):
         iannots.append(item)
     return map
 
+def remap_go_annotation_map(go_annotation_map, ontology_map, closure):
+    """
+    Remap an existing go annotation map using a certain closure (see CLOSURE_LABELS)
+    """
+    new_map = {}
+    for term in go_annotation_map:
+        new_map[term] = []
+        closure_terms = ontology_map[term][closure]
+
+        for closure_term in closure_terms:
+            # continue only if there is an annotation for that closure term
+            if closure_term not in go_annotation_map:
+                continue
+            # discard annotation to root terms
+            if closure_term in ASPECTS:
+                continue
+            new_map[term] = new_map[term] + go_annotation_map[closure_term]
+
+    return new_map
+
 def format_id(id):
     return id.replace("MGI:MGI:", "MGI:")
     # return id.replace("UniProtKB:", "")
@@ -47,6 +72,11 @@ def gmt(ontology_map, golr_base_url, taxa):
     print("\nCreating term annotation map for taxa ", taxa , " ...")
     go_annotation_map = create_go_annotation_map(golr_base_url, taxa)
     print("Term annotation map created with ", len(go_annotation_map) , " terms")
+
+    closure = utils.CLOSURE_LABELS.REGULATES
+    print("\nRemapping annotations using closure ", closure)
+    go_annotation_map = remap_go_annotation_map(go_annotation_map, ontology_map, closure)
+    print("Term annotation remapped using closure ", closure , " with ", len(go_annotation_map) , " terms")
 
     evidence_groups = [ "ALL", "EXPERIMENTAL", "INFERRED" ]
     aspect_lists = [ "ALL", "BP", "MF", "CC" ]
@@ -59,7 +89,7 @@ def gmt(ontology_map, golr_base_url, taxa):
 
     for term_id, value in go_annotation_map.items():
         # do not consider aspect level terms (irrelevant: a gene supposedly always have at least 1 MF, 1 BP and 1 CC)
-        if term_id in aspects:
+        if term_id in ASPECTS:
             continue
 
         term_label = ontology_map[term_id]['annotation_class_label']

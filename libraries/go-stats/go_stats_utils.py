@@ -2,9 +2,16 @@ import json
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from enum import Enum
 
 # This is a hard coded list of evidence, better organized for readability
 ev_all = ['EXP', 'IDA', 'IMP', 'IGI',  'IPI', 'IEP', 'IGC', 'RCA', 'IBA', 'IKR', 'IC', 'NAS', 'ND', 'TAS', 'HDA', 'HEP', 'HGI', 'HMP', 'ISA', 'ISM', 'ISO', 'ISS', 'IEA']
+
+
+class CLOSURE_LABELS(Enum):
+   ISA = "isa_closure",
+   ISA_PARTOF = "isa_partof_closure",
+   REGULATES = "regulates_closure"
 
 # This is a hard coded list of reference genomes that should always be present in a GO release
 REFERENCE_GENOME_IDS = [
