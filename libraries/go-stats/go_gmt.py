@@ -73,7 +73,7 @@ def gmt(ontology_map, golr_base_url, taxa):
     go_annotation_map = create_go_annotation_map(golr_base_url, taxa)
     print("Term annotation map created with ", len(go_annotation_map) , " terms")
 
-    closure = utils.CLOSURE_LABELS.REGULATES
+    closure = utils.CLOSURE_LABELS.REGULATES.value
     print("\nRemapping annotations using closure ", closure)
     go_annotation_map = remap_go_annotation_map(go_annotation_map, ontology_map, closure)
     print("Term annotation remapped using closure ", closure , " with ", len(go_annotation_map) , " terms")
