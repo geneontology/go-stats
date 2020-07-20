@@ -35,6 +35,11 @@ EVIDENCE_GROUPS = {
     "OTHER": ["IC", "ISA", "ISM", "ISO", "ISS", "NAS", "RCA", "TAS"]
 }
 
+EVIDENCE_MIN_GROUPS = {
+    "EXP" : EVIDENCE_GROUPS["EXP"] + EVIDENCE_GROUPS["HTP"],
+    "INFERRED" : EVIDENCE_GROUPS["PHYLO"] + EVIDENCE_GROUPS["IEA"] + EVIDENCE_GROUPS["OTHER"]
+}
+
 def aspect_from_source(source):
     if source == "molecular_function":
         return "MF"

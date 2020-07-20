@@ -7,8 +7,14 @@ from obo_parser import OBO_Parser, TermState
 max_rows = 10000000
 
 select_ontology = "select?fq=document_category:\"ontology_class\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=idspace:\"GO\"&fq=is_obsolete:false&fl=annotation_class,annotation_class_label,source"
-select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=taxon:\"NCBITaxon:9606\"&fq=type:\"protein\"&fl=bioentity,annotation_class"
-# select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=taxon:\"NCBITaxon:9606\"&fq=type:\"protein\"&fl=bioentity,aspect,annotation_class,evidence_type,isa_partof_closure,regulates_closure"
+select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=type:\"protein\"&fl=bioentity,annotation_class"
+
+aspects = {
+    "GO:0003674" : "MF",
+    "GO:0008150" : "BP",
+    "GO:0005575" : "CC"
+}
+
 
 def create_ontology_map(golr_base_url):
     ontology = utils.golr_fetch(golr_base_url, select_ontology)
@@ -33,22 +39,21 @@ def create_go_annotation_map(golr_base_url, taxa):
     return map
 
 def format_id(id):
-    return id.replace("UniProtKB:", "")
+    return id.replace("MGI:MGI:", "MGI:")
+    # return id.replace("UniProtKB:", "")
 
-
-
-aspects = {
-    "GO:0003674" : "MF",
-    "GO:0008150" : "BP",
-    "GO:0005575" : "CC"
-}
 
 def gmt(ontology_map, golr_base_url, taxa):
-    print("\nCreating term annotation map...")
+    print("\nCreating term annotation map for taxa ", taxa , " ...")
     go_annotation_map = create_go_annotation_map(golr_base_url, taxa)
     print("Term annotation map created with ", len(go_annotation_map) , " terms")
 
     report_direct = { "ALL" : "", "BP" : "", "MF" : "", "CC" : "", "UNK" : "" }
+    # report_direct = {   "ALL" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
+    #                     "BP" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
+    #                     "MF" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
+    #                     "CC" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
+    #                     "UNK" : { "ALL" : "", "EXP": "", "INFERRED" : "" } }
     count = 0
 
     for term_id, value in go_annotation_map.items():
@@ -70,8 +75,9 @@ def gmt(ontology_map, golr_base_url, taxa):
         report_direct[term_aspect] += "\t" + "\t".join(id_set) + "\n"
         count += 1
 
-        if count % 1000 == 0:
+        if count % 5000 == 0:
             print(str(count) + " terms map created...")
+    print(str(count) + " terms map created...")
 
     return report_direct
 
@@ -148,21 +154,12 @@ def main(argv):
         response = utils.fetch(slim_base_url + slim)
         obo = OBO_Parser(response.text)
         slim_obos[slim] = obo
-        print(slim , obo)
-        # with open(slim, 'r') as file:
-        #     data = file.read()
-        #     obo = OBO_Parser(data)
-        #     slim_obos[slim] = obo
-            # terms = obo.get_terms(TermState.VALID)
-            # print("VALID TERMS: ", len(terms))
-            # for term in terms:
-            #     print("- ", term , terms[term].id , terms[term].name)
     print("Slims loaded: ", len(slim_obos))
 
 
 
     # taxa = utils.REFERENCE_GENOME_IDS
-    taxa = [ "NCBITaxon:9606", "NCBITaxon:10116" ]
+    taxa = [ "NCBITaxon:9606", "NCBITaxon:10090" ]
     print("\n3 - Creating the GMTs for " , len(taxa) , " taxa")
     for taxon in taxa:
         taxon_id = taxon.split(":")[1]
@@ -176,7 +173,7 @@ def main(argv):
 
         for slim_obo in slim_obos:
             oterms = slim_obos[slim_obo].get_terms(TermState.VALID)
-            terms = list(map(lambda x: x.id, oterms))
+            terms = oterms.keys()
             gmt_taxon_slim = filter_slim(gmt_taxon, terms)
             slim_key = slim_obo.replace(".obo", "")
 
