@@ -7,7 +7,7 @@ from obo_parser import OBO_Parser, TermState
 max_rows = 10000000
 
 select_ontology = "select?fq=document_category:\"ontology_class\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=idspace:\"GO\"&fq=is_obsolete:false&fl=annotation_class,annotation_class_label,source"
-select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=type:\"protein\"&fl=bioentity,annotation_class"
+select_annotations = "select?fq=document_category:\"annotation\"&q=*:*&rows=" + str(max_rows) + "&wt=json&fq=type:\"protein\"&fl=bioentity,annotation_class,evidence_type"
 
 aspects = {
     "GO:0003674" : "MF",
@@ -48,51 +48,81 @@ def gmt(ontology_map, golr_base_url, taxa):
     go_annotation_map = create_go_annotation_map(golr_base_url, taxa)
     print("Term annotation map created with ", len(go_annotation_map) , " terms")
 
-    report_direct = { "ALL" : "", "BP" : "", "MF" : "", "CC" : "", "UNK" : "" }
-    # report_direct = {   "ALL" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
-    #                     "BP" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
-    #                     "MF" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
-    #                     "CC" : { "ALL" : "", "EXP": "", "INFERRED" : "" }, 
-    #                     "UNK" : { "ALL" : "", "EXP": "", "INFERRED" : "" } }
+    evidence_groups = [ "ALL", "EXPERIMENTAL", "INFERRED" ]
+    aspect_lists = [ "ALL", "BP", "MF", "CC" ]
+
+    report = { }
+    for aspect in aspect_lists:
+        report[aspect] = { }
+
     count = 0
 
     for term_id, value in go_annotation_map.items():
-        # do not consider aspect level terms (irrelevant: too many if not all genes)
+        # do not consider aspect level terms (irrelevant: a gene supposedly always have at least 1 MF, 1 BP and 1 CC)
         if term_id in aspects:
             continue
 
         term_label = ontology_map[term_id]['annotation_class_label']
         term_aspect = utils.aspect_from_source(ontology_map[term_id]['source'])
 
-        report_direct["ALL"] += term_label + "%" + term_aspect + "%" + term_id
-        report_direct[term_aspect] += term_label + "%" + term_aspect + "%" + term_id
 
-        id_set = set()
+        # for each annotated term, we'll keep a list of all the genes associated based on their evidence groups
+        id_sets = { }
+        for evgroup in evidence_groups:
+            id_set = set()
+            id_sets[evgroup] = id_set
+
+        # going through each annotation for the term considered
         for annot in value:
-            id_set.add(format_id(annot['bioentity']))
+            # Add all annotations (don't filter by evidence)
+            id_sets["ALL"].add(format_id(annot['bioentity']))
+            
+            et = annot['evidence_type']
+            evgroup = utils.get_evidence_min_group(et)
+            if(evgroup == "ND"):
+                continue
 
-        report_direct["ALL"] += "\t" + "\t".join(id_set) + "\n"
-        report_direct[term_aspect] += "\t" + "\t".join(id_set) + "\n"
+            # Add the annotation for the specific group of evidence
+            id_sets[evgroup].add(format_id(annot['bioentity']))
+
+
+        # Building the report for that term; will add only the term to an evidence group report IF the term has at least one gene
+        for evgroup in evidence_groups:
+            id_set = id_sets[evgroup]
+            if len(id_set) == 0:
+                continue
+            
+            if evgroup not in report["ALL"]:
+                report["ALL"][evgroup] = ""                
+            report["ALL"][evgroup] += term_label + "%" + term_aspect + "%" + term_id + "\t" + "\t".join(id_set) + "\n"
+
+            if evgroup not in report[term_aspect]:
+                report[term_aspect][evgroup] = ""
+            report[term_aspect][evgroup] += term_label + "%" + term_aspect + "%" + term_id + "\t" + "\t".join(id_set) + "\n"
+
         count += 1
 
         if count % 5000 == 0:
             print(str(count) + " terms map created...")
     print(str(count) + " terms map created...")
 
-    return report_direct
+    return report
 
 
 def filter_slim(report, terms):
     gmt_slim = { }
     for aspect in report:
-        gmt_aspect = report[aspect]
-        gmt_slim[aspect] = ""
-        lines = gmt_aspect.split("\n")
-        for line in lines:
-            # test if the line contains any terms of the slim
-            res = any(ele in line for ele in terms)
-            if res:
-                gmt_slim[aspect] += line + "\n"
+        gmt_slim[aspect] = { }
+        for evgroup in report[aspect]:
+            gmt_aspect = report[aspect][evgroup]
+            lines = gmt_aspect.split("\n")
+            for line in lines:
+                # test if the line contains any terms of the slim
+                res = any(ele in line for ele in terms)
+                if res:
+                    if evgroup not in gmt_slim[aspect]:
+                        gmt_slim[aspect][evgroup] = ""    
+                    gmt_slim[aspect][evgroup] += line + "\n"
     return gmt_slim
 
 
@@ -168,8 +198,9 @@ def main(argv):
         output = output_rep + taxon_id
 
         for aspect in gmt_taxon:
-            if len(gmt_taxon[aspect]) > 0:
-                utils.write_text(output + "-" + aspect.lower() + ".gmt", gmt_taxon[aspect])
+            for evgroup in gmt_taxon[aspect]:
+                if len(gmt_taxon[aspect][evgroup]) > 0:
+                    utils.write_text(output + "-" + aspect.lower() + "-" + evgroup.lower() + ".gmt", gmt_taxon[aspect][evgroup])
 
         for slim_obo in slim_obos:
             oterms = slim_obos[slim_obo].get_terms(TermState.VALID)
@@ -178,8 +209,9 @@ def main(argv):
             slim_key = slim_obo.replace(".obo", "")
 
             for aspect in gmt_taxon_slim:
-                if len(gmt_taxon_slim[aspect]) > 0:
-                    utils.write_text(output + "-" + slim_key + "-" + aspect.lower() + ".gmt", gmt_taxon_slim[aspect])
+                for evgroup in gmt_taxon_slim[aspect]:
+                    if len(gmt_taxon_slim[aspect][evgroup]) > 0:
+                        utils.write_text(output + "-" + slim_key + "-" + aspect.lower() + "-" + evgroup.lower() + ".gmt", gmt_taxon_slim[aspect][evgroup])
 
 
 
