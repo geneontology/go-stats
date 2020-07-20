@@ -78,7 +78,7 @@ def gmt(ontology_map, golr_base_url, taxa):
     go_annotation_map = remap_go_annotation_map(go_annotation_map, ontology_map, closure)
     print("Term annotation remapped using closure ", closure , " with ", len(go_annotation_map) , " terms")
 
-    evidence_groups = [ "ALL", "EXPERIMENTAL", "INFERRED" ]
+    evidence_groups = [ "ALL", "EXPERIMENTAL", "COMPUTATIONAL" ]
     aspect_lists = [ "ALL", "BP", "MF", "CC" ]
 
     report = { }

@@ -44,14 +44,14 @@ EVIDENCE_GROUPS = {
 
 EVIDENCE_MIN_GROUPS = {
     "EXPERIMENTAL" : EVIDENCE_GROUPS["EXP"] + EVIDENCE_GROUPS["HTP"],
-    "INFERRED" : EVIDENCE_GROUPS["PHYLO"] + EVIDENCE_GROUPS["IEA"] + EVIDENCE_GROUPS["OTHER"]
+    "COMPUTATIONAL" : EVIDENCE_GROUPS["PHYLO"] + EVIDENCE_GROUPS["IEA"] + EVIDENCE_GROUPS["OTHER"]
 }
 
 def is_experimental(evidence_type):
     return evidence_type in EVIDENCE_MIN_GROUPS["EXPERIMENTAL"]
 
-def is_inferred(evidence_type):
-    return evidence_type in EVIDENCE_MIN_GROUPS["INFERRED"]
+def is_computational(evidence_type):
+    return evidence_type in EVIDENCE_MIN_GROUPS["COMPUTATIONAL"]
 
 def get_evidence_min_group(evidence_type):
     for group, codes in EVIDENCE_MIN_GROUPS.items():
