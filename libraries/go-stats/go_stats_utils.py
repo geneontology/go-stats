@@ -92,7 +92,11 @@ def fetch(url):
     If an error occured, return None
     """
     global global_session
-    global_session = requests_retry(global_session)
+
+    # Ensure we are using the same session - creating too many sessions could crash this script
+    if global_session is None:
+        global_session = requests_retry(global_session)
+    
     try:
         r = global_session.get(url)
         return r

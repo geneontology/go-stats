@@ -230,6 +230,7 @@ def create_text_report(json_changes):
             text_report += "\n" + key + "\t" + item["id"] + "\t" + item["name"]
             data = item["changes"]
             for field in data:
+                print("field: ", field , "data[field][current]: " , data[field]["current"] , "data[field][previous]: " , data[field]["previous"])
                 text_report += "\n\t" + field + "\t" + format(data[field]["current"]) + "\tWAS\t" +format(data[field]["previous"])
 
     text_report += "\n\n" + count(json_changes["detailed_changes"]["cross_references"]) + " CROSS REFERENCES CHANGES"
@@ -253,6 +254,8 @@ def create_text_report(json_changes):
 def format(item):
     if type(item) == str:
         return item.strip()
+    if type(item) == bool:
+        return str(item)
     if type(item) == list:
         return ";".join(item)
     return item
