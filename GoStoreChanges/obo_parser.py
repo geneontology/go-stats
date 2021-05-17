@@ -212,4 +212,4 @@ class OBO_Parser:
     def get_term(self, query):
         if not self.has_term(query):
             return None
-        return self.obo_graph.node[query]['object']
+        return self.obo_graph.nodes[query]['object']
