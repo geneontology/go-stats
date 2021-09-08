@@ -195,6 +195,7 @@ def create_text_report(json_changes):
         text_report += "\nannotations by qualifier " + key + ":\t" + str(val)
     text_report += "\nreferences:\t" + str(json_changes["summary"]["current"]["references"])
     text_report += "\npmids:\t" + str(json_changes["summary"]["current"]["pmids"])
+    text_report += "\ngocams:\t" + str(json_changes["summary"]["current"]["gocams"])
 
     text_report += "\n\nSUMMARY: PREVIOUS RELEASE (" + json_changes["summary"]["previous"]["release_date"] + ")"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["previous"]["bioentities"])
@@ -209,6 +210,7 @@ def create_text_report(json_changes):
         text_report += "\nannotations by qualifier " + key + ":\t" + str(val)
     text_report += "\nreferences:\t" + str(json_changes["summary"]["previous"]["references"])
     text_report += "\npmids:\t" + str(json_changes["summary"]["previous"]["pmids"])
+    text_report += "\ngocams:\t" + str(json_changes["summary"]["previous"]["gocams"])
 
     text_report += "\n\nSUMMARY: DIFF BETWEEN RELEASES"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["current"]["bioentities"] - json_changes["summary"]["previous"]["bioentities"])
