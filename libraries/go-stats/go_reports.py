@@ -157,7 +157,8 @@ def main(argv):
         "annotations" : json_stats["annotations"],
         "taxa" : json_stats["taxa"],
         "bioentities" : json_stats["bioentities"],
-        "references" : json_stats["references"]
+        "references" : json_stats["references"],
+        "gocams" : json_stats["gocams"],
     }
     print("\n4a - SAVING GO-STATS...\n")
     utils.write_json(output_stats, json_stats)
@@ -170,7 +171,8 @@ def main(argv):
         "annotations" : json_stats_no_pb["annotations"],
         "taxa" : json_stats_no_pb["taxa"],
         "bioentities" : json_stats_no_pb["bioentities"],
-        "references" : json_stats_no_pb["references"]
+        "references" : json_stats_no_pb["references"],
+        "gocams": json_stats_no_pb["gocams"],
     }
     print("\n4b - SAVING GO-STATS-NO-PB...\n")
     utils.write_json(output_stats_no_pb, json_stats_no_pb)
@@ -272,6 +274,10 @@ def main(argv):
                 "removed" : json_annot_changes["summary"]["changes"]["pmids"]["removed"],
                 "by_model_organism" : pmids_by_reference_genome
             }
+        },
+        "gocams" : {
+            "all" : json_stats["gocams"]["all"]["total"],
+            "causal" : json_stats["gocams"]["causal"]["total"]
         },
     }
 

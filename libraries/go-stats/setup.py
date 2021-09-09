@@ -15,7 +15,7 @@ setup(
     keywords=["GO", "Gene Ontology", "annotation", "ontology", "stats", "changes", "GOLR", "statistics"],
     install_requires=[
         'requests',
-        'networkx',
+        'networkx==2.2',
         'SPARQLWrapper'
     ],
 
