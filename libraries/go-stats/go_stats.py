@@ -8,6 +8,7 @@ import go_stats_utils as utils
 
 # INPUT PARAMETERS
 golr_base_url = 'http://golr-aux.geneontology.io/solr/'
+blazegraph_url = "http://rdf.geneontology.org/blazegraph/sparql"  # TODO: Or should we be targeting localhost in pipeline context?
 
 ALL = "All"
 BP = utils.BP_TERM_ID
@@ -129,12 +130,13 @@ def compute_stats(golr_url, release_date, exclude_pb_only = False):
     qualifiers = utils.golr_fetch(golr_base_url, golr_select_qualifiers)
     qualifiers = utils.build_map(qualifiers['facet_counts']['facet_fields']['qualifier'])
 
-
+    all_gocams = utils.sparql_gocams(blazegraph_url)
+    causal_gocams = utils.sparql_causal_gocams(blazegraph_url)
 
     print("4 / 4 - Creating Stats...")    
     prepare_globals(all_annotations)
     print("\t4a - globals prepared")
-    stats = create_stats(all_terms, all_annotations, all_entities, release_date, qualifiers, exclude_pb_only)
+    stats = create_stats(all_terms, all_annotations, all_entities, release_date, qualifiers, all_gocams, causal_gocams, exclude_pb_only)
     print("Done.")
     
     return stats
@@ -282,7 +284,7 @@ def add_taxon_label(map):
                 new_map[key] = val
     return new_map
 
-def create_stats(all_terms, all_annotations, all_entities, release_date, qualifiers, exclude_pb_only = False):
+def create_stats(all_terms, all_annotations, all_entities, release_date, qualifiers, all_gocams, causal_gocams, exclude_pb_only = False):
     stats = { }
 
     terms = 0
@@ -448,13 +450,23 @@ def create_stats(all_terms, all_annotations, all_entities, release_date, qualifi
         }
     }
     references = add_taxon_label(references)
-    
+
+    gocams = {
+        "all" : {
+            "total" : len(all_gocams)
+        },
+        "causal" : {
+            "total" : len(causal_gocams)
+        }
+    }
+
     stats["release_date"] = release_date
     stats["terms"] = terms
     stats["annotations"] = annotations
     stats["taxa"] = taxa
     stats["bioentities"] = bioentities
     stats["references"] = references
+    stats["gocams"] = gocams
 
     return stats
 

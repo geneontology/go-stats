@@ -124,12 +124,14 @@ def main(argv):
 
     # 3 - Executing go_annotation_changes script
     print("\n\n3a - EXECUTING GO_ANNOTATION_CHANGES SCRIPT (INCLUDING PROTEIN BINDING)...\n")
-    previous_stats = utils.fetch(previous_stats_url).json()    
+    previous_stats = utils.fetch(previous_stats_url).json()
+    previous_stats = utils.fillin_missing_gocam_fields(previous_stats)
     json_annot_changes = go_annotation_changes.compute_changes(json_stats, previous_stats)
     print("DONE.")
     
     print("\n\n3b - EXECUTING GO_ANNOTATION_CHANGES SCRIPT (EXCLUDING PROTEIN BINDING)...\n")
     previous_stats_no_pb = utils.fetch(previous_stats_no_pb_url).json()    # WE STILL NEED TO CORRECT THAT: 1 FILE OR SEVERAL FILE ? IF SEVERAL, ONE MORE PARAMETER
+    previous_stats_no_pb = utils.fillin_missing_gocam_fields(previous_stats_no_pb)
     json_annot_no_pb_changes = go_annotation_changes.compute_changes(json_stats_no_pb, previous_stats_no_pb)
     print("DONE.")
 
@@ -157,7 +159,8 @@ def main(argv):
         "annotations" : json_stats["annotations"],
         "taxa" : json_stats["taxa"],
         "bioentities" : json_stats["bioentities"],
-        "references" : json_stats["references"]
+        "references" : json_stats["references"],
+        "gocams" : json_stats["gocams"],
     }
     print("\n4a - SAVING GO-STATS...\n")
     utils.write_json(output_stats, json_stats)
@@ -170,7 +173,8 @@ def main(argv):
         "annotations" : json_stats_no_pb["annotations"],
         "taxa" : json_stats_no_pb["taxa"],
         "bioentities" : json_stats_no_pb["bioentities"],
-        "references" : json_stats_no_pb["references"]
+        "references" : json_stats_no_pb["references"],
+        "gocams": json_stats_no_pb["gocams"],
     }
     print("\n4b - SAVING GO-STATS-NO-PB...\n")
     utils.write_json(output_stats_no_pb, json_stats_no_pb)
@@ -272,6 +276,10 @@ def main(argv):
                 "removed" : json_annot_changes["summary"]["changes"]["pmids"]["removed"],
                 "by_model_organism" : pmids_by_reference_genome
             }
+        },
+        "gocams" : {
+            "all" : json_stats["gocams"]["all"]["total"],
+            "causal" : json_stats["gocams"]["causal"]["total"]
         },
     }
 

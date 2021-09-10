@@ -90,7 +90,11 @@ def alter_annotation_changes(current_stats, previous_stats, current_references, 
                 "taxa" : current_stats["taxa"]["total"],
                 "taxa_filtered" : current_stats["taxa"]["filtered"],
                 "references" : current_stats["references"]["all"]["total"],
-                "pmids" : current_stats["references"]["pmids"]["total"]
+                "pmids" : current_stats["references"]["pmids"]["total"],
+                "gocams" : {
+                    "all" : current_stats["gocams"]["all"]["total"],
+                    "causal" : current_stats["gocams"]["causal"]["total"],
+                }
             },
             "previous" : {
                 "release_date" : previous_stats["release_date"],
@@ -104,7 +108,11 @@ def alter_annotation_changes(current_stats, previous_stats, current_references, 
                 "taxa" : previous_stats["taxa"]["total"],
                 "taxa_filtered" : previous_stats["taxa"]["filtered"],
                 "references" : previous_stats["references"]["all"]["total"],
-                "pmids" : previous_stats["references"]["pmids"]["total"]
+                "pmids" : previous_stats["references"]["pmids"]["total"],
+                "gocams" : {
+                    "all" : previous_stats["gocams"]["all"]["total"],
+                    "causal" : previous_stats["gocams"]["causal"]["total"],
+                }
             },
             "changes" : {
                 "annotations" : {
@@ -129,6 +137,10 @@ def alter_annotation_changes(current_stats, previous_stats, current_references, 
                     "total" : current_stats["references"]["pmids"]["total"] - previous_stats["references"]["pmids"]["total"],
                     "added" : 0,
                     "removed" : 0
+                },
+                "gocams" : {
+                    "all" : current_stats["gocams"]["all"]["total"] - previous_stats["gocams"]["all"]["total"],
+                    "causal" : current_stats["gocams"]["causal"]["total"] - previous_stats["gocams"]["causal"]["total"],
                 }
             },
         },
@@ -195,6 +207,8 @@ def create_text_report(json_changes):
         text_report += "\nannotations by qualifier " + key + ":\t" + str(val)
     text_report += "\nreferences:\t" + str(json_changes["summary"]["current"]["references"])
     text_report += "\npmids:\t" + str(json_changes["summary"]["current"]["pmids"])
+    text_report += "\nall gocams:\t" + str(json_changes["summary"]["current"]["gocams"]["all"])
+    text_report += "\ncausal gocams:\t" + str(json_changes["summary"]["current"]["gocams"]["causal"])
 
     text_report += "\n\nSUMMARY: PREVIOUS RELEASE (" + json_changes["summary"]["previous"]["release_date"] + ")"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["previous"]["bioentities"])
@@ -209,6 +223,8 @@ def create_text_report(json_changes):
         text_report += "\nannotations by qualifier " + key + ":\t" + str(val)
     text_report += "\nreferences:\t" + str(json_changes["summary"]["previous"]["references"])
     text_report += "\npmids:\t" + str(json_changes["summary"]["previous"]["pmids"])
+    text_report += "\nall gocams:\t" + str(json_changes["summary"]["previous"]["gocams"]["all"])
+    text_report += "\ncausal gocams:\t" + str(json_changes["summary"]["previous"]["gocams"]["causal"])
 
     text_report += "\n\nSUMMARY: DIFF BETWEEN RELEASES"
     text_report += "\nannotated bioentities:\t" + str(json_changes["summary"]["current"]["bioentities"] - json_changes["summary"]["previous"]["bioentities"])
@@ -229,6 +245,9 @@ def create_text_report(json_changes):
     
     for key, val in json_changes["summary"]["changes"]["pmids"].items():
         text_report += "\npmids " + key + ":\t" + str(json_changes["summary"]["changes"]["pmids"][key])
+
+    for key, val in json_changes["summary"]["changes"]["gocams"].items():
+        text_report += "\n" + key + " gocams:\t" + str(json_changes["summary"]["changes"]["gocams"][key])
 
 
 

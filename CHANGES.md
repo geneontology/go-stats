@@ -25,3 +25,11 @@ This update affects statistics files starting August 2020.
 * detailed_changes.references.pmids.removed : detail the list of publications present in the previous release but not present in the new/current release
 
 Note: go-annotation-changes.tsv should also reflect those changes that primarily occurs in go-annotation-changes.json
+
+## Update September 2021
+
+This update affects statistics files starting October 2021.
+
+### go-stats, go-stats-no-pb, go-stats-summary and go-annotation-changes
+* gocams.all : the number of all GO-CAM models in RDF triplestore
+* gocams.causal : the number of all GO-CAM models having at least 3 activities connected through causal relationships in RDF triplestore

@@ -1,5 +1,7 @@
 import json
 import requests
+import sparql_queries
+from SPARQLWrapper import SPARQLWrapper, JSON
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from enum import Enum
@@ -113,7 +115,22 @@ def post(url, params):
     except Exception as x:
         print("Query POST " , url , " failed: ", x)
         return None
-    
+
+def sparql_fetch(blazegraph_url, query):
+    sparql = SPARQLWrapper(blazegraph_url)
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    bindings = results['results']['bindings']
+    return bindings
+
+def sparql_gocams(blazegraph_url):
+    all_gocam_sparql_query = sparql_queries.ALL_GOCAM_MODELS
+    return sparql_fetch(blazegraph_url, all_gocam_sparql_query)
+
+def sparql_causal_gocams(blazegraph_url):
+    causal_gocam_sparql_query = sparql_queries.CAUSAL_GOCAM_MODELS
+    return sparql_fetch(blazegraph_url, causal_gocam_sparql_query)
 
 def golr_fetch(golr_base_url, select_query):
     """
@@ -267,6 +284,18 @@ def added_removed_species(current_stats, previous_stats):
         
     return results    
 
+def fillin_missing_gocam_fields(json_stats):
+    # Primarily for initial run when previous_stats will not have these new fields
+    if "gocams" not in json_stats:
+        json_stats["gocams"] = {
+            "all": {
+                "total": 0
+            },
+            "causal": {
+                "total": 0
+            }
+        }
+    return json_stats
 
 def bioentity_type(str_type):
     """
