@@ -124,12 +124,14 @@ def main(argv):
 
     # 3 - Executing go_annotation_changes script
     print("\n\n3a - EXECUTING GO_ANNOTATION_CHANGES SCRIPT (INCLUDING PROTEIN BINDING)...\n")
-    previous_stats = utils.fetch(previous_stats_url).json()    
+    previous_stats = utils.fetch(previous_stats_url).json()
+    previous_stats = utils.fillin_missing_gocam_fields(previous_stats)
     json_annot_changes = go_annotation_changes.compute_changes(json_stats, previous_stats)
     print("DONE.")
     
     print("\n\n3b - EXECUTING GO_ANNOTATION_CHANGES SCRIPT (EXCLUDING PROTEIN BINDING)...\n")
     previous_stats_no_pb = utils.fetch(previous_stats_no_pb_url).json()    # WE STILL NEED TO CORRECT THAT: 1 FILE OR SEVERAL FILE ? IF SEVERAL, ONE MORE PARAMETER
+    previous_stats_no_pb = utils.fillin_missing_gocam_fields(previous_stats_no_pb)
     json_annot_no_pb_changes = go_annotation_changes.compute_changes(json_stats_no_pb, previous_stats_no_pb)
     print("DONE.")
 

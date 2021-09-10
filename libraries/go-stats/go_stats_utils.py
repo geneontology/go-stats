@@ -284,6 +284,18 @@ def added_removed_species(current_stats, previous_stats):
         
     return results    
 
+def fillin_missing_gocam_fields(json_stats):
+    # Primarily for initial run when previous_stats will not have these new fields
+    if "gocams" not in json_stats:
+        json_stats["gocams"] = {
+            "all": {
+                "total": 0
+            },
+            "causal": {
+                "total": 0
+            }
+        }
+    return json_stats
 
 def bioentity_type(str_type):
     """
