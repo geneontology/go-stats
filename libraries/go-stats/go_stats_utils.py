@@ -96,7 +96,7 @@ def fetch(url):
     # Ensure we are using the same session - creating too many sessions could crash this script
     if global_session is None:
         global_session = requests_retry(global_session)
-    
+
     try:
         r = global_session.get(url)
         return r
@@ -109,11 +109,11 @@ def post(url, params):
     global_session = requests_retry(global_session)
     try:
         r = global_session.post(url, data = params)
-        return r  
+        return r
     except Exception as x:
         print("Query POST " , url , " failed: ", x)
         return None
-    
+
 
 def golr_fetch(golr_base_url, select_query):
     """
@@ -170,7 +170,12 @@ def build_reverse_map(map):
 def cluster_map(input_map, synonyms):
     cluster = { }
     for key, val in input_map.items():
-        temp = synonyms[key]
+        ## KeyError handling for #20.
+        try:
+            temp = synonyms[key]
+        except KeyError:
+            print("KEY MISSING (CM): ", key)
+            temp = bioentity_type(key)
         if temp in cluster:
             val_cluster = cluster[temp]
             cluster[temp] = val_cluster + val
@@ -182,7 +187,12 @@ def cluster_map(input_map, synonyms):
 def cluster_complex_map(input_map, synonyms):
     cluster = { }
     for key, val in input_map.items():
-        temp = synonyms[key]
+        ## KeyError handling for #20.
+        try:
+            temp = synonyms[key]
+        except KeyError:
+            print("KEY MISSING (CCM): ", key)
+            temp = bioentity_type(key)
         # print("working on : " , key , val)
         if temp in cluster:
             temp_cluster = cluster[temp]
@@ -200,7 +210,7 @@ def ordered_map(map):
     for w in sorted(map, key=map.get, reverse=True):
         ordered_map[w] = map[w]
     return ordered_map
-    
+
 def extract_map(map, key_str):
     extracted = { }
     for key, val in map.items():
@@ -241,14 +251,14 @@ def minus_dict(dict1, dict2):
             new_dict[key] = merge_dict(val, diff_val)
         else:
             print("should not happened ! " , val , type(val))
-    return new_dict    
+    return new_dict
 
 def has_taxon(stats, taxon_id):
     for taxon in stats["annotations"]["by_taxon"]:
         if taxon_id in taxon:
             return True
     return False
-    
+
 def added_removed_species(current_stats, previous_stats):
     results = {
         "added" : { },
@@ -264,8 +274,8 @@ def added_removed_species(current_stats, previous_stats):
         taxon_id = taxon.split("|")[0]
         if not has_taxon(current_stats, taxon_id):
             results["removed"][taxon] = previous_stats["annotations"]["by_taxon"][taxon]
-        
-    return results    
+
+    return results
 
 
 def bioentity_type(str_type):
@@ -291,11 +301,10 @@ def write_json(key, content):
             json.dump(content, outfile, indent=2)
         finally:
             outfile.close()
- 
+
 def write_text(key, content):
     with open(key, 'w') as outfile:
         try:
             outfile.write(content)
         finally:
             outfile.close()
-
